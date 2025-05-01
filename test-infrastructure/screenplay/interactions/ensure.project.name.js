@@ -1,16 +1,16 @@
 import Task from '../tasks/task'
 import ProjectNamePage from '~/test-infrastructure/pages/project.name.page'
 
-export default class EnsureProjectNameError extends Task {
+export default class EnsureThatProjectName extends Task {
   /**
    * Description placeholder
    *
    * @static
    * @param {string} expectation
-   * @returns {EnsureProjectNameError}
+   * @returns {EnsureThatProjectName}
    */
   static is(expectation) {
-    return new EnsureProjectNameError(expectation)
+    return new EnsureThatProjectName(expectation)
   }
 
   /**
@@ -32,8 +32,8 @@ export default class EnsureProjectNameError extends Task {
    * @returns {*}
    */
   async performAs(actor) {
-    await actor.ability.expectElementToContainText(
-      ProjectNamePage.projectNameError,
+    await actor.ability.expectElementToHaveValue(
+      ProjectNamePage.projectNameInput,
       this.expectation
     )
   }
