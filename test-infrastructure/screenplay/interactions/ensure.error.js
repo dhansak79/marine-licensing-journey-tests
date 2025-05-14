@@ -1,8 +1,8 @@
 import Task from '../tasks/task'
 
-export default class EnsureTaskStatus extends Task {
+export default class EnsureErrorDisplayed extends Task {
   static is(locator, expectation) {
-    return new EnsureTaskStatus(locator, expectation)
+    return new EnsureErrorDisplayed(locator, expectation)
   }
 
   constructor(locator, expectation) {

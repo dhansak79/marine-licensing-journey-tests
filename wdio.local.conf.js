@@ -13,7 +13,8 @@ export const config = {
   runner: 'local',
   specs: ['test/features/*.feature'],
   cucumberOpts: {
-    require: ['test/steps/*.js']
+    require: ['test/steps/*.js'],
+    tags: ['not @wip']
   },
   maxInstances: 1,
   capabilities: debug
@@ -34,7 +35,7 @@ export const config = {
       ],
   execArgv,
   logLevel: debug ? 'debug' : 'info',
-  bail: 1,
+  bail: 0,
   baseUrl: `http://localhost:3000/`,
   waitforTimeout: 5000,
   waitforInterval: 200,
@@ -53,27 +54,17 @@ export const config = {
       }
     ]
   ],
-
-  /**
-   * This cucumber hook executes after a scenario and attaches a screenshot
-   * to the report if the scenario has failed
-   *
-   * @param {object} scenario the cucumber scenario context
-   */
+  beforeScenario: async function () {
+    await browser.reloadSession()
+  },
+  afterStep: async function () {
+    await browser.takeScreenshot()
+  },
   afterScenario: async function (scenario) {
     if (scenario.result.status === 'FAILED') {
       await browser.takeScreenshot()
     }
   },
-
-  /**
-   * Gets executed after all workers got shut down and the process is about to exit. An error
-   * thrown in the onComplete hook will result in the test run failing.
-   * @param {object} exitCode 0 - success, 1 - fail
-   * @param {object} config wdio configuration object
-   * @param {Array.<Object>} capabilities list of capabilities details
-   * @param {<Object>} results object containing test results
-   */
   onComplete: function (exitCode, config, capabilities, results) {
     const reportError = new Error('Could not generate Allure report')
     const generation = allure(['generate', 'allure-results', '--clean'])

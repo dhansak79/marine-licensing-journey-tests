@@ -1,28 +1,58 @@
+import { attachJson } from '../capture/json.js'
+import PublicRegisterPage from '../pages/public.register.page.js'
+
 export default class Actor {
-  /**
-   * Creates an instance of Actor.
-   * @param {string} name - The name of the actor.
-   */
   const
   constructor(name) {
     this.name = name
+    this.memory = {}
   }
 
-  /**
-   * Assigns an ability to the actor.
-   * @param {Ability} ability - The ability the actor can perform.
-   */
   can(ability) {
     this.ability = ability
   }
 
-  /**
-   * The actor attempts to perform multiple tasks.
-   * @param {...Task} tasks - The tasks to be performed.
-   */
   async attemptsTo(...tasks) {
     for (const task of tasks) {
       await task.performAs(this)
+    }
+  }
+
+  remembers(key, value) {
+    this.memory[key] = value
+    attachJson(this.toJson(), `actor-memory-changed-${key}.json`)
+  }
+
+  recalls(key) {
+    return this.memory[key]
+  }
+
+  forgets(key) {
+    delete this.memory[key]
+    attachJson(this.toJson(), `actor-memory-removed-${key}.json`)
+  }
+
+  toJson() {
+    const memoryWithDescriptions = { ...this.memory }
+
+    if ('publicRegisterChoice' in memoryWithDescriptions) {
+      switch (memoryWithDescriptions.publicRegisterChoice) {
+        case PublicRegisterPage.withhold:
+          memoryWithDescriptions.publicRegisterChoice =
+            'Withhold information from the public register'
+          break
+        case PublicRegisterPage.consent:
+          memoryWithDescriptions.publicRegisterChoice =
+            'Allow information to be added to the public register'
+          break
+        default:
+          break
+      }
+    }
+
+    return {
+      name: this.name,
+      memory: memoryWithDescriptions
     }
   }
 }
