@@ -1,0 +1,45 @@
+---
+description: 
+globs: *.feature,*.steps.js
+alwaysApply: false
+---
+# BDD Guidelines
+
+- **Golden Rule**
+  - Treat other readers as you would want to be treated. Write Gherkin so that people who don't know the feature will understand it.
+- **Cardinal Rule**
+  - One Scenario, One Behaviour
+- **Good titles** - the title is like the face of the scenario, the first thing people read
+- **Less is more** - keep your scenarios short and sweet <10 steps
+- **Focus features on customer needs**
+- **Always use Given, When, Then in that order and only that order** - don't repeat them; any single When-Then pair denotes an individual behaviour
+- **Respect the integrity of the step types**:
+  - Given sets up initial state
+  - When performs an action
+  - Then verifies the outcome
+
+## Implementation Mapping
+
+**BDD → Screenplay Pattern:**
+- **Given steps** → Set up initial state (often through tasks)
+- **When steps** → User actions that map to high-level **Tasks** 
+- **Then steps** → Verification that maps to **Interactions** with `ensure` prefix
+
+> 📖 **See:** [`screenplay-pattern.mdc`](./screenplay-pattern.mdc) for implementation details
+
+## Strategic Context
+
+**Planning Your Scenarios:**
+- Use HTSM quality criteria to identify what behaviors to test
+- Consider risk areas and product factors when designing scenarios
+- Focus on customer value and real user workflows
+
+> 📖 **See:** [`htsm.mdc`](./htsm.mdc) for strategic test thinking
+
+## File Organization
+
+- Feature files go in `test/features/`
+- Step definitions go in `test/steps/`
+- Screenplay implementation follows the patterns in `test-infrastructure/screenplay/`
+
+> 📖 **See:** [`project-structure.mdc`](./project-structure.mdc) for complete organization rules
