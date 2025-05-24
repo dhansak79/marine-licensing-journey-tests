@@ -77,6 +77,16 @@ This directory contains the complete set of rules and guidelines for the Marine 
 
 ### 📝 **Development Practices & Style**
 
+#### [`responsible.ai.use.mdc`](./responsible.ai.use.mdc)
+
+**Responsible AI Use in Test Automation**
+
+- AI assistant limitations and appropriate use cases
+- Human verification requirements for domain-specific content
+- Test generation validation points and edge case handling
+- Marine licensing context awareness for realistic test scenarios
+- Based on NASA research on LLM limitations in safety-critical contexts
+
 #### [`playbook.clean.code.mdc`](./playbook.clean.code.mdc)
 
 **Clean Code & Code Smells**
@@ -105,14 +115,15 @@ This directory contains the complete set of rules and guidelines for the Marine 
 - GOV.UK content design guidance
 - UK Government style manual compliance
 
-#### [`playbook.refactoring.mdc`](./playbook.refactoring.mdc)
+#### [`playbook.refactoring.mdc`](./playbook.refactoring.mdc) 🔬
 
-**Refactoring Guidelines**
+**Research-Backed Refactoring Guidelines**
 
-- Targeted improvement principles
-- Content preservation strategies
-- Readability enhancement focus
-- Structure maintenance rules
+- Evidence-based AI-assisted refactoring safety protocols
+- Manual refactoring best practices and validation checklists
+- Refactoring vs Refuctoring distinction and behaviour preservation
+- Strategic technical debt mitigation approaches
+- Complete research references and methodology
 
 ## How These Rules Work Together
 
@@ -137,10 +148,11 @@ Development Practices →  Playbook rules guide style, process, and refinement
 | Writing JavaScript code              | [`code.generation.mdc`](./code.generation.mdc)               |
 | Understanding the application        | [`application.under.test.mdc`](./application.under.test.mdc) |
 | Understanding users and their needs  | [`personas.mdc`](./personas.mdc)                             |
+| Using AI assistance                  | [`responsible.ai.use.mdc`](./responsible.ai.use.mdc)         |
 | Reviewing code quality               | [`playbook.clean.code.mdc`](./playbook.clean.code.mdc)       |
 | Following development best practices | [`playbook.general.rules.mdc`](./playbook.general.rules.mdc) |
 | Maintaining style and tone           | [`playbook.styleguide.mdc`](./playbook.styleguide.mdc)       |
-| Refactoring existing content         | [`playbook.refactoring.mdc`](./playbook.refactoring.mdc)     |
+| Refactoring existing content         | [`playbook.refactoring.mdc`](./playbook.refactoring.mdc) 🔬  |
 
 ## Getting Started
 
