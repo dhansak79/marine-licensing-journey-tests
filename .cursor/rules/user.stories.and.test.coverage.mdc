@@ -1,6 +1,6 @@
 ---
-description:
-globs:
+description: when working with user stories, assessing test coverage, linking requirements to tests, planning test implementation, or reviewing coverage gaps
+globs: 
 alwaysApply: false
 ---
 # User Stories and Test Coverage

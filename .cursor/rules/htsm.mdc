@@ -1,6 +1,6 @@
 ---
-description: 
-globs: *.feature
+description: when applying systematic testing techniques, using heuristic models for test discovery, planning comprehensive test coverage, or conducting risk-based testing
+globs: 
 alwaysApply: false
 ---
 # Heuristic Test Strategy Model — Context for Development and Testing Support
