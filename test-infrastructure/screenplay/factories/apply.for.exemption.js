@@ -47,4 +47,55 @@ export default class ApplyForExemption {
   getData() {
     return this.data
   }
+
+  get andSiteDetails() {
+    return {
+      withCircleWGS84: () => {
+        this.data.siteDetails = {
+          coordinatesEntryMethod: 'enter-manually',
+          siteType: 'circle',
+          coordinateSystem: 'WGS84',
+          circleData: {
+            latitude: 51.507412,
+            longitude: -0.127812,
+            radiusMeters: 20,
+            easting: null,
+            northing: null
+          }
+        }
+        return this
+      },
+      withCircleOSGB36: () => {
+        this.data.siteDetails = {
+          coordinatesEntryMethod: 'enter-manually',
+          siteType: 'circle',
+          coordinateSystem: 'OSGB36',
+          circleData: {
+            easting: 432675,
+            northing: 181310,
+            radiusMeters: 20,
+            latitude: null,
+            longitude: null
+          }
+        }
+        return this
+      },
+      withBoundaryWGS84: () => {
+        this.data.siteDetails = {
+          coordinatesEntryMethod: 'enter-manually',
+          siteType: 'boundary',
+          coordinateSystem: 'WGS84'
+        }
+        return this
+      },
+      withBoundaryOSGB36: () => {
+        this.data.siteDetails = {
+          coordinatesEntryMethod: 'enter-manually',
+          siteType: 'boundary',
+          coordinateSystem: 'OSGB36'
+        }
+        return this
+      }
+    }
+  }
 }
