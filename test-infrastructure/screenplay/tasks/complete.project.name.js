@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import ProjectNamePage from '~/test-infrastructure/pages/project.name.page'
 import Task from '../base/task.js'
+import Memory from '../memory.js'
 
 export default class CompleteProjectName extends Task {
   static now() {
@@ -21,8 +22,6 @@ export default class CompleteProjectName extends Task {
     )
     await browseTheWeb.click(ProjectNamePage.saveAndContinue)
 
-    actor.updates('exemption', (exemption) =>
-      exemption.markProjectNameTaskCompleted()
-    )
+    actor.updates(Memory.markTaskCompleted('projectName'))
   }
 }

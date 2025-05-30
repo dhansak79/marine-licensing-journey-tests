@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import PublicRegisterPage from '~/test-infrastructure/pages/public.register.page'
 import Task from '../base/task.js'
+import Memory from '../memory.js'
 
 export default class CompletePublicRegisterTask extends Task {
   static andSave() {
@@ -50,9 +51,7 @@ export default class CompletePublicRegisterTask extends Task {
     if (this.saveAndContinue) {
       await browseTheWeb.click(PublicRegisterPage.saveAndContinue)
 
-      actor.updates('exemption', (exemption) =>
-        exemption.markPublicRegisterTaskCompleted()
-      )
+      actor.updates(Memory.markTaskCompleted('publicRegister'))
     }
   }
 }
