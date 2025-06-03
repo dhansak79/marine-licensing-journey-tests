@@ -1,10 +1,14 @@
 import { expect } from '~/node_modules/@wdio/globals/build/index'
 import CommonElementsPage from '~/test-infrastructure/pages/common.elements.page.js'
 import Ability from '../abilities/ability'
+import { ERROR_MESSAGES } from '../constants/error-messages.js'
 
 export default class BrowseTheWeb extends Ability {
   constructor(browser) {
     super()
+    if (!browser) {
+      expect.fail(ERROR_MESSAGES.MISSING_BROWSER)
+    }
     this.browser = browser
   }
 
@@ -25,6 +29,10 @@ export default class BrowseTheWeb extends Ability {
   }
 
   async getElement(locator) {
+    if (!locator) {
+      expect.fail(ERROR_MESSAGES.LOCATOR_UNDEFINED)
+    }
+
     if (typeof locator === 'object' && locator.primary) {
       try {
         const element = await this.browser.$(locator.primary)
@@ -39,6 +47,10 @@ export default class BrowseTheWeb extends Ability {
       if (locator.fallback) {
         return await this.browser.$(locator.fallback)
       }
+
+      expect.fail(
+        ERROR_MESSAGES.LOCATOR_NOT_FOUND(locator.primary, locator.fallback)
+      )
     }
 
     return await this.browser.$(locator)

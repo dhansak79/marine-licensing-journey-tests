@@ -1,5 +1,6 @@
-import { assert } from 'chai'
+import { expect } from 'chai'
 import { attachJson } from '../capture/json.js'
+import { ERROR_MESSAGES } from './constants/error-messages.js'
 import MemoryFormatter from './models/memory.formatter.js'
 
 export default class Actor {
@@ -26,9 +27,7 @@ export default class Actor {
 
   remembers(key, value) {
     if (this.hasMemoryOf(key) && key === 'exemption') {
-      assert.fail(
-        `Cannot replace stored ${key} data. Use updates() method instead.`
-      )
+      expect.fail(ERROR_MESSAGES.CANNOT_REPLACE_EXEMPTION(key))
     }
     this.memory[key] = value
     attachJson(this.toJson(), `actor-memory-changed-${key}.json`)
@@ -37,7 +36,7 @@ export default class Actor {
   updates(updateFunction) {
     const exemption = this.recalls('exemption')
     if (!exemption) {
-      assert.fail('Cannot update exemption data that has not been initialized')
+      expect.fail(ERROR_MESSAGES.CANNOT_UPDATE_UNINITIALIZED)
     }
 
     updateFunction(exemption)
@@ -47,8 +46,9 @@ export default class Actor {
   }
 
   recalls(key) {
-    const errorMessage = `Actor '${this.name}' tried to recall '${key}' but it wasn't in memory`
-    assert.property(this.memory, key, errorMessage)
+    if (!this.hasMemoryOf(key)) {
+      expect.fail(ERROR_MESSAGES.MEMORY_NOT_FOUND(this.name, key))
+    }
     return this.memory[key]
   }
 
