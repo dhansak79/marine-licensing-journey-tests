@@ -9,10 +9,6 @@ export default class ApplyForExemption {
     this.data = { ...data }
   }
 
-  /**
-   * Creates the base exemption object with default values
-   * @private
-   */
   static _createBaseExemption(overrides = {}) {
     return {
       projectName: MarineProjectModel.generateProjectName(),
@@ -57,6 +53,41 @@ export default class ApplyForExemption {
     return this.data
   }
 
+  latitude(value) {
+    if (this.data.siteDetails && this.data.siteDetails.circleData) {
+      this.data.siteDetails.circleData.latitude = value
+    }
+    return this
+  }
+
+  longitude(value) {
+    if (this.data.siteDetails && this.data.siteDetails.circleData) {
+      this.data.siteDetails.circleData.longitude = value
+    }
+    return this
+  }
+
+  radius(value) {
+    if (this.data.siteDetails && this.data.siteDetails.circleData) {
+      this.data.siteDetails.circleData.radiusMeters = value
+    }
+    return this
+  }
+
+  eastings(value) {
+    if (this.data.siteDetails && this.data.siteDetails.circleData) {
+      this.data.siteDetails.circleData.eastings = value
+    }
+    return this
+  }
+
+  northings(value) {
+    if (this.data.siteDetails && this.data.siteDetails.circleData) {
+      this.data.siteDetails.circleData.northings = value
+    }
+    return this
+  }
+
   get andSiteDetails() {
     return {
       withCircleWGS84: () => {
@@ -80,8 +111,8 @@ export default class ApplyForExemption {
           siteType: 'circle',
           coordinateSystem: 'OSGB36',
           circleData: {
-            easting: 432675,
-            northing: 181310,
+            eastings: 432675,
+            northings: 181310,
             radiusMeters: 20,
             latitude: null,
             longitude: null

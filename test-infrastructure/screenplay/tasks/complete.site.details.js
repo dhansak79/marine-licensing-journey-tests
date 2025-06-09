@@ -1,9 +1,12 @@
 import { expect } from 'chai'
-import HowDoYouWantToEnterTheCoordinatesPage from '~/test-infrastructure/pages/how.do.you.want.to.enter.the.coordinates.page.js'
-import HowDoYouWantToProvideCoordinatesPage from '~/test-infrastructure/pages/how.do.you.want.to.provide.coordinates.page'
-import WhatCoordinateSystemPage from '~/test-infrastructure/pages/what.coordinate.system.page.js'
-import { ERROR_MESSAGES } from '../constants/error-messages.js'
 import Task from '../base/task.js'
+import { ERROR_MESSAGES } from '../constants/error-messages.js'
+import {
+  EnterCoordinatesCentrePointPageInteractions,
+  HowDoYouWantToEnterTheCoordinatesPageInteractions,
+  HowDoYouWantToProvideCoordinatesPageInteractions,
+  WhatCoordinateSystemPageInteractions
+} from '../page-interactions/index.js'
 
 export default class CompleteSiteDetails extends Task {
   static now() {
@@ -25,31 +28,33 @@ export default class CompleteSiteDetails extends Task {
   }
 
   async completeManualEntryFlow(browseTheWeb, siteDetails) {
-    await browseTheWeb.click(
-      HowDoYouWantToProvideCoordinatesPage.getCoordinatesInputMethodSelector(
-        siteDetails.coordinatesEntryMethod
-      )
+    await HowDoYouWantToProvideCoordinatesPageInteractions.selectCoordinatesInputMethodAndContinue(
+      browseTheWeb,
+      siteDetails.coordinatesEntryMethod
     )
-    await browseTheWeb.click(
-      HowDoYouWantToProvideCoordinatesPage.saveAndContinue
+    await HowDoYouWantToEnterTheCoordinatesPageInteractions.selectSiteTypeAndContinue(
+      browseTheWeb,
+      siteDetails.siteType
     )
+    await WhatCoordinateSystemPageInteractions.selectCoordinateSystemAndContinue(
+      browseTheWeb,
+      siteDetails.coordinateSystem
+    )
+    await this.enterCoordinateData(browseTheWeb, siteDetails)
+  }
 
-    await browseTheWeb.click(
-      HowDoYouWantToEnterTheCoordinatesPage.getSiteTypeSelector(
-        siteDetails.siteType
+  async enterCoordinateData(browseTheWeb, siteDetails) {
+    if (this.isCircleSite(siteDetails)) {
+      await EnterCoordinatesCentrePointPageInteractions.enterCircleCoordinates(
+        browseTheWeb,
+        siteDetails.coordinateSystem,
+        siteDetails.circleData
       )
-    )
-    await browseTheWeb.click(
-      HowDoYouWantToEnterTheCoordinatesPage.saveAndContinue
-    )
-    await browseTheWeb.click(
-      WhatCoordinateSystemPage.getCoordinateSystemSelector(
-        siteDetails.coordinateSystem
-      )
-    )
-    await browseTheWeb.click(
-      HowDoYouWantToEnterTheCoordinatesPage.saveAndContinue
-    )
+    }
+  }
+
+  isCircleSite(siteDetails) {
+    return siteDetails.siteType === 'circle'
   }
 
   async completeFileUploadFlow(browseTheWeb, siteDetails) {
