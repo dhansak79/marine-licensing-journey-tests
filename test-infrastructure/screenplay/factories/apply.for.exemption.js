@@ -88,6 +88,13 @@ export default class ApplyForExemption {
     return this
   }
 
+  width(value) {
+    if (this.data.siteDetails && this.data.siteDetails.circleData) {
+      this.data.siteDetails.circleData.width = value
+    }
+    return this
+  }
+
   get andSiteDetails() {
     return {
       withCircleWGS84: () => {
@@ -98,7 +105,7 @@ export default class ApplyForExemption {
           circleData: {
             latitude: 51.507412,
             longitude: -0.127812,
-            radiusMeters: 20,
+            width: 20,
             easting: null,
             northing: null
           }
@@ -113,7 +120,7 @@ export default class ApplyForExemption {
           circleData: {
             eastings: 432675,
             northings: 181310,
-            radiusMeters: 20,
+            width: 20,
             latitude: null,
             longitude: null
           }

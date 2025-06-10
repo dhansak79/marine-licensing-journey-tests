@@ -5,7 +5,8 @@ import {
   EnterCoordinatesCentrePointPageInteractions,
   HowDoYouWantToEnterTheCoordinatesPageInteractions,
   HowDoYouWantToProvideCoordinatesPageInteractions,
-  WhatCoordinateSystemPageInteractions
+  WhatCoordinateSystemPageInteractions,
+  WidthOfCircularSitePageInteractions
 } from '../page-interactions/index.js'
 
 export default class CompleteSiteDetails extends Task {
@@ -28,6 +29,11 @@ export default class CompleteSiteDetails extends Task {
   }
 
   async completeManualEntryFlow(browseTheWeb, siteDetails) {
+    await this.completeManualEntryFlowUpToCoordinates(browseTheWeb, siteDetails)
+    await this.enterWidthOfCircleIfOnWidthPage(browseTheWeb, siteDetails)
+  }
+
+  async completeManualEntryFlowUpToCoordinates(browseTheWeb, siteDetails) {
     await HowDoYouWantToProvideCoordinatesPageInteractions.selectCoordinatesInputMethodAndContinue(
       browseTheWeb,
       siteDetails.coordinatesEntryMethod
@@ -47,8 +53,7 @@ export default class CompleteSiteDetails extends Task {
     if (this.isCircleSite(siteDetails)) {
       await EnterCoordinatesCentrePointPageInteractions.enterCircleCoordinates(
         browseTheWeb,
-        siteDetails.coordinateSystem,
-        siteDetails.circleData
+        siteDetails
       )
     }
   }
@@ -72,5 +77,22 @@ export default class CompleteSiteDetails extends Task {
       expect.fail(ERROR_MESSAGES.MISSING_DATA('Site details', 'site details'))
     }
     return exemption
+  }
+
+  async enterWidthOfCircle(browseTheWeb, siteDetails) {
+    await WidthOfCircularSitePageInteractions.enterWidthOfCircleAndContinue(
+      browseTheWeb,
+      siteDetails.circleData.width
+    )
+  }
+
+  async enterWidthOfCircleIfOnWidthPage(browseTheWeb, siteDetails) {
+    try {
+      const widthElement = await browseTheWeb.browser.$('#width')
+      await widthElement.waitForExist({ timeout: 1000 })
+      await this.enterWidthOfCircle(browseTheWeb, siteDetails)
+    } catch (error) {
+      // Do nothing
+    }
   }
 }
