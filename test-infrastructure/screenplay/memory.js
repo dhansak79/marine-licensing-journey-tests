@@ -68,4 +68,25 @@ export default class Memory {
       }
     }
   }
+
+  static ofActivityDatesWith(activityDates) {
+    if (!activityDates || typeof activityDates !== 'object') {
+      expect.fail('Activity dates must be an object')
+    }
+    return (exemption) => (exemption.activityDates = activityDates)
+  }
+
+  static ofActivityStartDateWith(startDate) {
+    if (!startDate || typeof startDate !== 'object') {
+      expect.fail('Activity start date must be an object')
+    }
+    return (exemption) => (exemption.activityDates.startDate = startDate)
+  }
+
+  static ofActivityEndDateWith(endDate) {
+    if (!endDate || typeof endDate !== 'object') {
+      expect.fail('Activity end date must be an object')
+    }
+    return (exemption) => (exemption.activityDates.endDate = endDate)
+  }
 }
