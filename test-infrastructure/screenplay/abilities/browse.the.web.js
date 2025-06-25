@@ -89,6 +89,24 @@ export default class BrowseTheWeb extends Ability {
     await expect(element).toHaveText(expect.stringContaining(expectedSubstring))
   }
 
+  async expectElementToHaveExactText(locator, expectedText) {
+    const element = await this.getElement(locator)
+    await element.waitForExist()
+    await expect(element).toHaveText(expectedText)
+  }
+
+  async expectElementToBePresent(locator) {
+    const element = await this.getElement(locator)
+    await element.waitForExist()
+    await expect(element).toExist()
+  }
+
+  async getText(locator) {
+    const element = await this.getElement(locator)
+    await element.waitForExist()
+    return await element.getText()
+  }
+
   async expectElementToHaveValue(locator, expectedValue) {
     const element = await this.getElement(locator)
     await expect(element).toHaveAttribute('value', expectedValue)

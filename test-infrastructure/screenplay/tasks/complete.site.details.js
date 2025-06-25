@@ -1,6 +1,8 @@
 import { expect } from 'chai'
 import Task from '../base/task.js'
 import { ERROR_MESSAGES } from '../constants/error-messages.js'
+import { ClickSaveAndContinue } from '../interactions/index.js'
+import Memory from '../memory.js'
 import {
   EnterCoordinatesCentrePointPageInteractions,
   HowDoYouWantToEnterTheCoordinatesPageInteractions,
@@ -11,7 +13,16 @@ import {
 
 export default class CompleteSiteDetails extends Task {
   static now() {
-    return new CompleteSiteDetails()
+    return new CompleteSiteDetails(false)
+  }
+
+  static andSave() {
+    return new CompleteSiteDetails(true)
+  }
+
+  constructor(saveAndContinue = false) {
+    super()
+    this.saveAndContinue = saveAndContinue
   }
 
   async performAs(actor) {
@@ -25,6 +36,11 @@ export default class CompleteSiteDetails extends Task {
       await this.completeManualEntryFlow(browseTheWeb, siteDetails)
     } else {
       expect.fail(ERROR_MESSAGES.INVALID_COORDINATES_METHOD)
+    }
+
+    if (this.saveAndContinue) {
+      await actor.attemptsTo(ClickSaveAndContinue.now())
+      actor.updates(Memory.markTaskCompleted('siteDetails'))
     }
   }
 
@@ -63,13 +79,10 @@ export default class CompleteSiteDetails extends Task {
   }
 
   async completeFileUploadFlow(browseTheWeb, siteDetails, actor) {
-    // Navigate to file upload by selecting "Upload a file" option
     await HowDoYouWantToProvideCoordinatesPageInteractions.selectCoordinatesInputMethodAndContinue(
       browseTheWeb,
       siteDetails.coordinatesEntryMethod
     )
-
-    // Stop here - the test steps will handle the file type selection
     // TODO: When more of the file upload flow is implemented, we can complete the flow here
   }
 

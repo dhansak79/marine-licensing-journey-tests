@@ -24,6 +24,8 @@
   - [ML-35: Centre point coordinates](../user-stories/ML-35.enter.centre.point.of.a.circle.md)
   - [ML-36: Circle width entry](../user-stories/ML-36.enter.width.of.circular.site.md)
   - [ML-37: Site details review](../user-stories/ML-37.review.circular.site.details.md)
+  - [ML-82: Check answers before submission](../user-stories/ML-82.check.answers.circular.site.md)
+  - [ML-84: Submit notification](../user-stories/ML-84.submit.notification.md)
 - **Personas:**
   - [Sarah - Discovery-First User](../personas/sarah-discovery-first-user.md)
 
@@ -127,3 +129,5 @@ IMMEDIATE ACTIONS:
 ---
 
 **Delivered features tested:** Complete exemption notification workflow including project name, task list, activity dates (enhanced validation), activity description, public register consent, and complete site details coordinate entry workflow
+
+**Related charters:** See [Review and Submission](./review-and-submission.md) for focused investigation of final stage review confidence and submission patterns for first-time users
