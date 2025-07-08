@@ -12,13 +12,16 @@ import {
   BrowseTheWeb,
   ClickSaveAndContinue,
   CompleteProjectName,
+  EnsureCoordinateError,
   EnsureErrorDisplayed,
+  EnsureMultipleErrorsAreDisplayed,
   EnsurePageHeading,
   EnsureThatCoordinateEntryMethodSelected,
   EnsureThatSiteTypeSelected,
   Navigate,
   NavigateToSiteDetailsPage,
-  SelectTheTask
+  SelectTheTask,
+  SetCoordinateField
 } from '~/test-infrastructure/screenplay'
 
 Given('a user is providing site details', async function () {
@@ -299,4 +302,50 @@ Then('the width error {string} is displayed', async function (errorMessage) {
   await this.actor.attemptsTo(
     EnsureErrorDisplayed.is(WidthOfCircularSitePage.widthError, errorMessage)
   )
+})
+
+When(
+  'the {string} input for {string} is set to {string}',
+  async function (fieldType, point, invalidValue) {
+    await this.actor.attemptsTo(
+      SetCoordinateField.withValue(fieldType, point, invalidValue)
+    )
+  }
+)
+
+Then(
+  'the {string} error for {string} is {string}',
+  async function (fieldType, point, expectedError) {
+    await this.actor.attemptsTo(
+      EnsureCoordinateError.forField(fieldType, point, expectedError)
+    )
+  }
+)
+
+Then(
+  'the following validation errors are displayed:',
+  async function (dataTable) {
+    const errors = dataTable.hashes()
+
+    // Detect coordinate system based on field names
+    const hasLatLongFields = errors.some(
+      (error) =>
+        (error.Field || error.field)?.includes('latitude') ||
+        (error.Field || error.field)?.includes('longitude')
+    )
+
+    if (hasLatLongFields) {
+      await this.actor.attemptsTo(
+        EnsureMultipleErrorsAreDisplayed.forPolygonWGS84Coordinates(errors)
+      )
+    } else {
+      await this.actor.attemptsTo(
+        EnsureMultipleErrorsAreDisplayed.forPolygonOSGB36Coordinates(errors)
+      )
+    }
+  }
+)
+
+When('the Continue button is clicked', async function () {
+  await this.actor.attemptsTo(ClickSaveAndContinue.now())
 })

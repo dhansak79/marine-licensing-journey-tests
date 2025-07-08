@@ -10,6 +10,7 @@ import {
   EnsurePageHeading,
   EnsureSiteDetails,
   Navigate,
+  NavigateToSiteDetailsPage,
   SelectTheTask
 } from '~/test-infrastructure/screenplay'
 
@@ -36,6 +37,36 @@ Given(
 )
 
 Given(
+  'an exemption for a circular site using OSGB36 coordinates with eastings {string}, northings {string} and width {string} metres',
+  function (eastings, northings, circleWidth) {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName()
+        .andSiteDetails.forACircleWithOSGB36Coordinates()
+        .withEastings(eastings)
+        .withNorthings(northings)
+        .withWidth(circleWidth)
+    )
+  }
+)
+
+Given(
+  'an exemption for a circular site using WGS84 coordinates with latitude {string}, longitude {string} and width {string} metres',
+  function (latitude, longitude, circleWidth) {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName()
+        .andSiteDetails.forACircleWithWGS84Coordinates()
+        .withLatitude(latitude)
+        .withLongitude(longitude)
+        .withWidth(circleWidth)
+    )
+  }
+)
+
+Given(
   'the user wants to apply for an exemption for a polygonal site using WGS84 coordinates',
   function () {
     this.actor = new Actor('Alice')
@@ -57,7 +88,41 @@ Given(
   }
 )
 
-Given('reaches the site details task', async function () {
+Given(
+  'an exemption for a triangular site using WGS84 coordinates with point 1 {string}, {string}, point 2 {string}, {string} and point 3 {string}, {string}',
+  function (lat1, lng1, lat2, lng2, lat3, lng3) {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName()
+        .andSiteDetails.forATriangleWithWGS84Coordinates()
+        .withCoordinatePoints([
+          { latitude: lat1, longitude: lng1 },
+          { latitude: lat2, longitude: lng2 },
+          { latitude: lat3, longitude: lng3 }
+        ])
+    )
+  }
+)
+
+Given(
+  'an exemption for a triangular site using OSGB36 coordinates with point 1 {string}, {string}, point 2 {string}, {string} and point 3 {string}, {string}',
+  function (east1, north1, east2, north2, east3, north3) {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName()
+        .andSiteDetails.forATriangleWithOSGB36Coordinates()
+        .withCoordinatePoints([
+          { eastings: east1, northings: north1 },
+          { eastings: east2, northings: north2 },
+          { eastings: east3, northings: north3 }
+        ])
+    )
+  }
+)
+
+Given('the site details task is reached', async function () {
   await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
   await this.actor.attemptsTo(CompleteProjectName.now())
   await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
@@ -67,11 +132,24 @@ When('the site details task is completed', async function () {
   await this.actor.attemptsTo(CompleteSiteDetails.now())
 })
 
+When('the triangular site coordinates are entered', async function () {
+  await this.actor.attemptsTo(CompleteSiteDetails.coordinatesOnly())
+})
+
 Then('the site details review page shows the site details', async function () {
   await this.actor.attemptsTo(EnsurePageHeading.is('Review site details'))
   await this.actor.attemptsTo(EnsureSiteDetails.areCorrect())
   await this.actor.attemptsTo(ClickSaveAndContinue.now())
 })
+
+Then(
+  'the site details review page shows the triangular site details',
+  async function () {
+    await this.actor.attemptsTo(EnsurePageHeading.is('Review site details'))
+    await this.actor.attemptsTo(EnsureSiteDetails.areCorrect())
+    await this.actor.attemptsTo(ClickSaveAndContinue.now())
+  }
+)
 
 Then(
   'the Enter the width of the circular site page is displayed',
@@ -83,10 +161,61 @@ Then(
 )
 
 Then(
-  'the Which coordinate system do you want to use page is displayed',
+  'the Enter multiple sets of coordinates to mark the boundary of the site page is displayed',
   async function () {
     await this.actor.attemptsTo(
-      EnsurePageHeading.is('Which coordinate system do you want to use?')
+      EnsurePageHeading.is(
+        'Enter multiple sets of coordinates to mark the boundary of the site'
+      )
+    )
+  }
+)
+
+Then('the coordinates entry page remains displayed', async function () {
+  await this.actor.attemptsTo(
+    EnsurePageHeading.is(
+      'Enter multiple sets of coordinates to mark the boundary of the site'
+    )
+  )
+})
+
+When(
+  'the Continue button is clicked without providing any coordinates',
+  async function () {
+    await this.actor.attemptsTo(ClickSaveAndContinue.now())
+  }
+)
+
+Given(
+  'the Enter multiple sets of coordinates to mark the boundary of the site for OSGB36 coordinates page is displayed',
+  async function () {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName().andSiteDetails.forABoundaryWithOSGB36Coordinates()
+    )
+    await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+    await this.actor.attemptsTo(CompleteProjectName.now())
+    await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
+    await this.actor.attemptsTo(
+      NavigateToSiteDetailsPage.enterPolygonOSGB36CoordinatesPageOnly()
+    )
+  }
+)
+
+Given(
+  'the Enter multiple sets of coordinates to mark the boundary of the site for WGS84 coordinates page is displayed',
+  async function () {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName().andSiteDetails.forABoundaryWithWGS84Coordinates()
+    )
+    await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+    await this.actor.attemptsTo(CompleteProjectName.now())
+    await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
+    await this.actor.attemptsTo(
+      NavigateToSiteDetailsPage.enterPolygonWGS84CoordinatesPageOnly()
     )
   }
 )
