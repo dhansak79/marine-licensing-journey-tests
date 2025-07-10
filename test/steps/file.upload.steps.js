@@ -1,5 +1,19 @@
-import { Given, Then, When } from '@cucumber/cucumber'
+import { After, Given, Then, When } from '@wdio/cucumber-framework'
 import { browser } from '@wdio/globals'
+
+import {
+  ClickSaveAndContinue,
+  EnsureErrorDisplayed,
+  EnsureNoErrorsDisplayed,
+  EnsurePageHeading,
+  EnsureProjectNameDisplayedAsCaption,
+  SelectTheTask
+} from '~/test-infrastructure/screenplay/interactions/index.js'
+
+import {
+  HowDoYouWantToProvideCoordinatesPageInteractions,
+  WhichTypeOfFileDoYouWantToUploadPageInteractions
+} from '~/test-infrastructure/screenplay/page-interactions/index.js'
 
 import {
   Actor,
@@ -7,74 +21,354 @@ import {
   BrowseTheWeb,
   CompleteProjectName,
   CompleteSiteDetails,
-  Navigate,
-  SelectTheTask
-} from '~/test-infrastructure/screenplay'
-import {
-  EnsureErrorDisplayed,
-  EnsureThatFileTypeSelected,
-  SelectFileType
-} from '~/test-infrastructure/screenplay/interactions'
+  Navigate
+} from '~/test-infrastructure/screenplay/index.js'
 
-Given(
-  'the user wants to apply for an exemption using a Shapefile',
-  function () {
-    this.actor = new Actor('Alice')
-    this.actor.can(BrowseTheWeb.using(browser))
-    this.actor.intendsTo(ApplyForExemption.withShapefileUpload())
-  }
-)
+import FileGenerator from '~/test-infrastructure/helpers/file-generator.js'
+import { FileUploadPage } from '~/test-infrastructure/pages/index.js'
 
-Given('the user wants to apply for an exemption using a KML file', function () {
+// ========================================
+// KML UPLOAD SCENARIOS (7 step definitions)
+// ========================================
+
+Given('an exemption notification with a valid KML file', async function () {
   this.actor = new Actor('Alice')
   this.actor.can(BrowseTheWeb.using(browser))
   this.actor.intendsTo(ApplyForExemption.withKMLUpload())
+  await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+  await this.actor.attemptsTo(CompleteProjectName.now())
+  await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
 })
 
 Given(
-  'the Which type of file do you want to upload? page is displayed',
+  'an exemption notification with a KML file with a virus',
   async function () {
-    if (!this.actor) {
-      this.actor = new Actor('Alice')
-      this.actor.can(BrowseTheWeb.using(browser))
-      this.actor.intendsTo(ApplyForExemption.withFileUpload())
-    }
-
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(ApplyForExemption.withKMLVirusUpload())
     await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
     await this.actor.attemptsTo(CompleteProjectName.now())
     await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
-    await this.actor.attemptsTo(CompleteSiteDetails.now())
   }
 )
 
-When('selecting Shapefile as the file type', async function () {
-  await this.actor.attemptsTo(SelectFileType.shapefile())
+Given('an exemption notification for KML file upload', async function () {
+  this.actor = new Actor('Alice')
+  this.actor.can(BrowseTheWeb.using(browser))
+  this.actor.intendsTo(ApplyForExemption.withKMLFileUpload())
+  await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+  await this.actor.attemptsTo(CompleteProjectName.now())
+  await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
 })
 
-When('selecting KML as the file type', async function () {
-  await this.actor.attemptsTo(SelectFileType.kml())
+Given(
+  'an exemption notification with wrong file type for KML',
+  async function () {
+    this.actor = new Actor('Charlie')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(ApplyForExemption.withKMLWrongFileType())
+    await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+    await this.actor.attemptsTo(CompleteProjectName.now())
+    await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
+  }
+)
+
+Given('an exemption notification with KML file too large', async function () {
+  this.generatedFilePath = await FileGenerator.generateTemporaryLargeFile(
+    'kml-file-too-large',
+    51
+  )
+
+  this.actor = new Actor('David')
+  this.actor.can(BrowseTheWeb.using(browser))
+  this.actor.intendsTo(
+    ApplyForExemption.withKMLLargeFile(this.generatedFilePath)
+  )
+  await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+  await this.actor.attemptsTo(CompleteProjectName.now())
+  await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
+})
+
+Given('an exemption notification with empty KML file', async function () {
+  this.generatedFilePath =
+    FileGenerator.generateTemporaryEmptyFile('empty-kml-file')
+
+  this.actor = new Actor('Emily')
+  this.actor.can(BrowseTheWeb.using(browser))
+  this.actor.intendsTo(
+    ApplyForExemption.withKMLEmptyFile(this.generatedFilePath)
+  )
+  await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+  await this.actor.attemptsTo(CompleteProjectName.now())
+  await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
 })
 
 When(
-  'the Continue button is clicked without selecting a file type',
+  'navigating to the KML upload page and continuing without selecting a file',
   async function () {
-    await this.actor.attemptsTo(SelectFileType.clickContinueWithoutSelection())
+    await HowDoYouWantToProvideCoordinatesPageInteractions.selectCoordinatesInputMethodAndContinue(
+      this.actor.ability,
+      'file-upload'
+    )
+
+    await WhichTypeOfFileDoYouWantToUploadPageInteractions.selectFileTypeAndContinue(
+      this.actor.ability,
+      'KML'
+    )
+
+    await this.actor.attemptsTo(ClickSaveAndContinue.now())
   }
 )
 
-Then('the Shapefile option is selected', async function () {
-  await this.actor.attemptsTo(EnsureThatFileTypeSelected.is('Shapefile'))
+// ========================================
+// SHAPEFILE UPLOAD SCENARIOS (7 step definitions)
+// ========================================
+
+Given('an exemption notification with a valid Shapefile', async function () {
+  this.actor = new Actor('Alice')
+  this.actor.can(BrowseTheWeb.using(browser))
+  this.actor.intendsTo(ApplyForExemption.withShapefileUpload())
+  await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+  await this.actor.attemptsTo(CompleteProjectName.now())
+  await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
 })
 
-Then('the KML option is selected', async function () {
-  await this.actor.attemptsTo(EnsureThatFileTypeSelected.is('KML'))
+Given(
+  'an exemption notification with a Shapefile with a virus',
+  async function () {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(ApplyForExemption.withShapefileVirusUpload())
+    await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+    await this.actor.attemptsTo(CompleteProjectName.now())
+    await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
+  }
+)
+
+Given('an exemption notification for Shapefile upload', async function () {
+  this.actor = new Actor('Alice')
+  this.actor.can(BrowseTheWeb.using(browser))
+  this.actor.intendsTo(ApplyForExemption.withShapefileFileUpload())
+  await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+  await this.actor.attemptsTo(CompleteProjectName.now())
+  await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
 })
+
+Given(
+  'an exemption notification with wrong file type for Shapefile',
+  async function () {
+    this.actor = new Actor('Charlie')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(ApplyForExemption.withShapefileWrongFileType())
+    await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+    await this.actor.attemptsTo(CompleteProjectName.now())
+    await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
+  }
+)
+
+Given('an exemption notification with Shapefile too large', async function () {
+  this.generatedFilePath = await FileGenerator.generateTemporaryLargeShapefile(
+    'shapefile-too-large',
+    51
+  )
+
+  this.actor = new Actor('David')
+  this.actor.can(BrowseTheWeb.using(browser))
+  this.actor.intendsTo(
+    ApplyForExemption.withShapefileLargeFile(this.generatedFilePath)
+  )
+  await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+  await this.actor.attemptsTo(CompleteProjectName.now())
+  await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
+})
+
+Given('an exemption notification with empty Shapefile', async function () {
+  this.generatedFilePath =
+    FileGenerator.generateTemporaryEmptyShapefile('empty-shapefile')
+
+  this.actor = new Actor('Emily')
+  this.actor.can(BrowseTheWeb.using(browser))
+  this.actor.intendsTo(
+    ApplyForExemption.withShapefileEmptyFile(this.generatedFilePath)
+  )
+  await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+  await this.actor.attemptsTo(CompleteProjectName.now())
+  await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
+})
+
+When(
+  'navigating to the Shapefile upload page and continuing without selecting a file',
+  async function () {
+    await HowDoYouWantToProvideCoordinatesPageInteractions.selectCoordinatesInputMethodAndContinue(
+      this.actor.ability,
+      'file-upload'
+    )
+
+    await WhichTypeOfFileDoYouWantToUploadPageInteractions.selectFileTypeAndContinue(
+      this.actor.ability,
+      'Shapefile'
+    )
+
+    await this.actor.attemptsTo(ClickSaveAndContinue.now())
+  }
+)
+
+// ========================================
+// SHARED STEP DEFINITIONS
+// ========================================
+
+Given('the Upload a KML file page is displayed', async function () {
+  await this.actor.attemptsTo(
+    EnsurePageHeading.is('Upload a KML file'),
+    EnsureProjectNameDisplayedAsCaption.fromMemory()
+  )
+})
+
+Given(
+  'the {string} file type has been selected',
+  async function (fileUploadType) {
+    await this.actor.attemptsTo(
+      WhichTypeOfFileDoYouWantToUploadPageInteractions.selectOption(
+        fileUploadType
+      ),
+      ClickSaveAndContinue.now()
+    )
+  }
+)
+
+When('completing the site details task', async function () {
+  await this.actor.attemptsTo(CompleteSiteDetails.now())
+})
+
+When('uploading a valid KML file', async function () {
+  await this.actor.attemptsTo(CompleteSiteDetails.now())
+})
+
+When(
+  'an invalid file type {string} is selected for upload',
+  async function (fileUploadType) {
+    await this.actor.attemptsTo(
+      WhichTypeOfFileDoYouWantToUploadPageInteractions.selectOption(
+        fileUploadType
+      ),
+      ClickSaveAndContinue.now()
+    )
+  }
+)
 
 Then(
-  'the file type error {string} is displayed',
-  async function (expectedErrorMessage) {
+  'the {string} file upload type error {string} is displayed',
+  async function (fileUploadType, expectedErrorMessage) {
     await this.actor.attemptsTo(
       EnsureErrorDisplayed.is('#fileUploadType-error', expectedErrorMessage)
     )
   }
 )
+
+Then('the Upload a Shapefile file page is displayed', async function () {
+  await this.actor.attemptsTo(
+    EnsurePageHeading.is('Upload a Shapefile'),
+    EnsureProjectNameDisplayedAsCaption.fromMemory()
+  )
+})
+
+Then('the file is successfully processed', async function () {
+  await this.actor.attemptsTo(EnsureNoErrorsDisplayed.onPage())
+})
+
+Then(
+  'the file upload error {string} is displayed',
+  async function (expectedErrorMessage) {
+    await this.actor.attemptsTo(
+      EnsureErrorDisplayed.is(
+        FileUploadPage.fileUploadError,
+        expectedErrorMessage
+      )
+    )
+  }
+)
+
+Then('the spinner page displays during upload process', async function () {
+  await this.actor.ability.isDisplayed(FileUploadPage.spinner)
+})
+
+// ========================================
+// LEGACY STEP DEFINITIONS (for backward compatibility)
+// ========================================
+
+Given('an exemption notification with a file with a virus', async function () {
+  this.actor = new Actor('Alice')
+  this.actor.can(BrowseTheWeb.using(browser))
+  this.actor.intendsTo(ApplyForExemption.withVirusUpload())
+  await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+  await this.actor.attemptsTo(CompleteProjectName.now())
+  await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
+})
+
+Given('an exemption notification for file upload', async function () {
+  this.actor = new Actor('Alice')
+  this.actor.can(BrowseTheWeb.using(browser))
+  this.actor.intendsTo(ApplyForExemption.withFileUpload())
+  await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+  await this.actor.attemptsTo(CompleteProjectName.now())
+  await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
+})
+
+Given('an exemption notification with wrong file type', async function () {
+  this.actor = new Actor('Charlie')
+  this.actor.can(BrowseTheWeb.using(browser))
+  this.actor.intendsTo(ApplyForExemption.withWrongFileType())
+  await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+  await this.actor.attemptsTo(CompleteProjectName.now())
+  await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
+})
+
+Given('an exemption notification with file too large', async function () {
+  this.generatedFilePath = await FileGenerator.generateTemporaryLargeFile(
+    'file-too-large',
+    51
+  )
+
+  this.actor = new Actor('David')
+  this.actor.can(BrowseTheWeb.using(browser))
+  this.actor.intendsTo(ApplyForExemption.withLargeFile(this.generatedFilePath))
+  await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+  await this.actor.attemptsTo(CompleteProjectName.now())
+  await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
+})
+
+Given('an exemption notification with empty file', async function () {
+  this.generatedFilePath =
+    FileGenerator.generateTemporaryEmptyFile('empty-file')
+
+  this.actor = new Actor('Emily')
+  this.actor.can(BrowseTheWeb.using(browser))
+  this.actor.intendsTo(ApplyForExemption.withEmptyFile(this.generatedFilePath))
+  await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+  await this.actor.attemptsTo(CompleteProjectName.now())
+  await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
+})
+
+When(
+  'navigating to the file upload page and continuing without selecting a file',
+  async function () {
+    await HowDoYouWantToProvideCoordinatesPageInteractions.selectCoordinatesInputMethodAndContinue(
+      this.actor.ability,
+      'file-upload'
+    )
+
+    await WhichTypeOfFileDoYouWantToUploadPageInteractions.selectFileTypeAndContinue(
+      this.actor.ability,
+      'Shapefile'
+    )
+
+    await this.actor.attemptsTo(ClickSaveAndContinue.now())
+  }
+)
+
+After(function () {
+  if (this.generatedFilePath) {
+    FileGenerator.cleanupFile(this.generatedFilePath)
+    this.generatedFilePath = null
+  }
+})

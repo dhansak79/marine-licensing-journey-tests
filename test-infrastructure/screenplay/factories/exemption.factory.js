@@ -1,3 +1,4 @@
+import FileGenerator from '../../helpers/file-generator.js'
 import {
   ActivityDescriptionModel,
   FileTypeModel,
@@ -74,23 +75,101 @@ export default class ExemptionFactory {
     })
   }
 
-  static createShapefileUpload() {
+  static createFileUploadBase(fileType, options = {}) {
+    const { filePath, generateFile } = options
+    const actualFilePath = generateFile ? generateFile() : filePath
+
     return this.createBaseExemption({
-      fileType: FileTypeModel.generateShapefile(),
-      siteDetails: SiteDetailsFactory.createFileUpload()
+      siteDetails: {
+        ...SiteDetailsFactory.createFileUpload(),
+        fileType:
+          fileType === 'kml'
+            ? FileTypeModel.generateKML()
+            : FileTypeModel.generateShapefile(),
+        ...(actualFilePath && { filePath: actualFilePath })
+      }
     })
   }
 
   static createKMLUpload() {
-    return this.createBaseExemption({
-      fileType: FileTypeModel.generateKML(),
-      siteDetails: SiteDetailsFactory.createFileUpload()
+    return this.createFileUploadBase('kml', {
+      filePath: 'test/resources/EXE_2025_00009-LOCATIONS.kml'
     })
   }
 
-  static createFileUpload() {
-    return this.createBaseExemption({
-      siteDetails: SiteDetailsFactory.createFileUpload()
+  static createKMLVirusUpload() {
+    return this.createFileUploadBase('kml', {
+      filePath: 'test/resources/nasty-virus-here.kml'
     })
+  }
+
+  static createKMLFileUpload() {
+    return this.createFileUploadBase('kml')
+  }
+
+  static createKMLWrongFileType() {
+    return this.createFileUploadBase('kml', {
+      filePath:
+        'test/resources/uk-government-gathers-business-and-environment-leaders-in-support-of-un-nature-agreement.html'
+    })
+  }
+
+  static createKMLLargeFile(filePath) {
+    return this.createFileUploadBase('kml', { filePath })
+  }
+
+  static createKMLEmptyFile(filePath) {
+    return this.createFileUploadBase('kml', { filePath })
+  }
+
+  static createShapefileUpload() {
+    return this.createFileUploadBase('shapefile', {
+      generateFile: () => FileGenerator.generateTemporaryValidShapefile()
+    })
+  }
+
+  static createShapefileVirusUpload() {
+    return this.createFileUploadBase('shapefile', {
+      generateFile: () => FileGenerator.generateTemporaryVirusShapefile()
+    })
+  }
+
+  static createShapefileFileUpload() {
+    return this.createFileUploadBase('shapefile')
+  }
+
+  static createShapefileWrongFileType() {
+    return this.createFileUploadBase('shapefile', {
+      filePath:
+        'test/resources/uk-government-gathers-business-and-environment-leaders-in-support-of-un-nature-agreement.html'
+    })
+  }
+
+  static createShapefileLargeFile(filePath) {
+    return this.createFileUploadBase('shapefile', { filePath })
+  }
+
+  static createShapefileEmptyFile(filePath) {
+    return this.createFileUploadBase('shapefile', { filePath })
+  }
+
+  static createVirusUpload() {
+    return this.createKMLVirusUpload()
+  }
+
+  static createFileUpload() {
+    return this.createKMLFileUpload()
+  }
+
+  static createWrongFileType() {
+    return this.createKMLWrongFileType()
+  }
+
+  static createLargeFile(filePath) {
+    return this.createKMLLargeFile(filePath)
+  }
+
+  static createEmptyFile(filePath) {
+    return this.createKMLEmptyFile(filePath)
   }
 }

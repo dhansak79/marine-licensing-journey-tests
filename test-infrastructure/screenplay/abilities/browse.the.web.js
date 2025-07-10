@@ -1,5 +1,5 @@
+import { expect } from '@wdio/globals'
 import { expect as chaiExpect } from 'chai'
-import { expect } from '~/node_modules/@wdio/globals/build/index'
 import { DefraIdStubUserManager } from '~/test-infrastructure/helpers/defra-id-stub-user-manager.js'
 import CommonElementsPage from '~/test-infrastructure/pages/common.elements.page.js'
 import Ability from '../abilities/ability'
@@ -39,14 +39,10 @@ export default class BrowseTheWeb extends Ability {
     }
 
     if (typeof locator === 'object' && locator.primary) {
-      try {
-        const element = await this.browser.$(locator.primary)
-        const isExisting = await element.isExisting()
-        if (isExisting) {
-          return element
-        }
-      } catch (error) {
-        // Primary locator failed, will try fallback if available
+      const element = await this.browser.$(locator.primary)
+      const isExisting = await element.isExisting()
+      if (isExisting) {
+        return element
       }
 
       if (locator.fallback) {
@@ -157,5 +153,10 @@ export default class BrowseTheWeb extends Ability {
 
   async expireTestUser(userId) {
     return await this.defraIdStub.expireTestUser(userId)
+  }
+
+  async setValue(locator, value) {
+    const element = await this.getElement(locator)
+    await element.setValue(value)
   }
 }
