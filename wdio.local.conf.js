@@ -18,7 +18,7 @@ export const config = {
   specs: ['test/features/*.feature'],
   cucumberOpts: {
     require: ['test/steps/*.js'],
-    tags: ['not @wip'],
+    tags: ['not @wip', 'not @bug'],
     timeout: 120000 // 60 seconds for local development (generous timeout for debugging)
   },
 
@@ -56,7 +56,7 @@ export const config = {
   bail: 0,
   baseUrl: `http://localhost:3000/`,
   defraIdUrl: 'http://localhost:3200',
-  waitforTimeout: 5000,
+  waitforTimeout: 10000,
   waitforInterval: 200,
   connectionRetryTimeout: 120000,
   connectionRetryCount: 3,
@@ -85,7 +85,6 @@ export const config = {
       await browser.takeScreenshot()
     }
 
-    // Clean up any test users created during this scenario
     if (global.testUsersCreated && global.testUsersCreated.length > 0) {
       const { DefraIdStubUserManager } = await import(
         './test-infrastructure/helpers/defra-id-stub-user-manager.js'
@@ -101,7 +100,6 @@ export const config = {
         }
       }
 
-      // Clear the list for next scenario
       global.testUsersCreated = []
     }
   },

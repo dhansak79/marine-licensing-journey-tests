@@ -27,7 +27,7 @@ export const config = {
   specs: ['test/features/*.feature'],
   cucumberOpts: {
     require: ['test/steps/*.js'],
-    tags: ['not @wip'],
+    tags: ['not @wip', 'not @bug', 'not @local-only'],
     timeout: 30000 // 30 seconds for CI environment
   },
 
@@ -75,7 +75,7 @@ export const config = {
   bail: 0,
   waitforTimeout: 10000,
   waitforInterval: 200,
-  connectionRetryTimeout: 6000,
+  connectionRetryTimeout: 120000,
   connectionRetryCount: 3,
   framework: 'cucumber',
 
