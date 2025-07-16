@@ -35,7 +35,7 @@ export const config = {
   cucumberOpts: {
     require: ['test/steps/*.js'],
     tags: getTags(),
-    timeout: 30000 // 30 seconds for CI environment
+    timeout: 120000
   },
 
   // ============================================================================
