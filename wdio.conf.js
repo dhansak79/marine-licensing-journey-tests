@@ -5,8 +5,8 @@ import {
 } from './test-infrastructure/capture/index.js'
 
 let chromeProxyConfig = {}
-if (process.env.HTTP_PROXY) {
-  const url = new URL(process.env.HTTP_PROXY)
+if (process.env.CDP_HTTP_PROXY) {
+  const url = new URL(process.env.CDP_HTTP_PROXY)
   chromeProxyConfig = {
     proxy: {
       proxyType: 'manual',
