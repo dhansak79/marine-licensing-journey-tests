@@ -4,15 +4,11 @@ import {
   logUserCleanup
 } from './test-infrastructure/capture/index.js'
 
-let chromeProxyConfig = {}
-if (process.env.HTTP_PROXY) {
-  const url = new URL(process.env.HTTP_PROXY)
-  chromeProxyConfig = {
-    proxy: {
-      proxyType: 'manual',
-      httpProxy: `${url.host}:${url.port}`,
-      sslProxy: `${url.host}:${url.port}`
-    }
+const chromeProxyConfig = {
+  proxy: {
+    proxyType: 'manual',
+    httpProxy: 'localhost:3128',
+    sslProxy: 'localhost:3128'
   }
 }
 
