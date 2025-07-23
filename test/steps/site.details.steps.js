@@ -4,6 +4,7 @@ import {
   Actor,
   ApplyForExemption,
   BrowseTheWeb,
+  ClickButton,
   ClickSaveAndContinue,
   CompleteProjectName,
   CompleteSiteDetails,
@@ -122,6 +123,91 @@ Given(
   }
 )
 
+Given(
+  'an exemption for a quadrilateral site using WGS84 coordinates with point 1 {string}, {string}, point 2 {string}, {string}, point 3 {string}, {string} and point 4 {string}, {string}',
+  function (lat1, lng1, lat2, lng2, lat3, lng3, lat4, lng4) {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName()
+        .andSiteDetails.forAQuadrilateralWithWGS84Coordinates()
+        .withCoordinatePoints([
+          { latitude: lat1, longitude: lng1 },
+          { latitude: lat2, longitude: lng2 },
+          { latitude: lat3, longitude: lng3 },
+          { latitude: lat4, longitude: lng4 }
+        ])
+    )
+  }
+)
+
+Given(
+  'an exemption for a quadrilateral site using OSGB36 coordinates with point 1 {string}, {string}, point 2 {string}, {string}, point 3 {string}, {string} and point 4 {string}, {string}',
+  function (east1, north1, east2, north2, east3, north3, east4, north4) {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName()
+        .andSiteDetails.forAQuadrilateralWithOSGB36Coordinates()
+        .withCoordinatePoints([
+          { eastings: east1, northings: north1 },
+          { eastings: east2, northings: north2 },
+          { eastings: east3, northings: north3 },
+          { eastings: east4, northings: north4 }
+        ])
+    )
+  }
+)
+
+Given(
+  'an exemption for a pentagon site using WGS84 coordinates with point 1 {string}, {string}, point 2 {string}, {string}, point 3 {string}, {string}, point 4 {string}, {string} and point 5 {string}, {string}',
+  function (lat1, lng1, lat2, lng2, lat3, lng3, lat4, lng4, lat5, lng5) {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName()
+        .andSiteDetails.forAPentagonWithWGS84Coordinates()
+        .withCoordinatePoints([
+          { latitude: lat1, longitude: lng1 },
+          { latitude: lat2, longitude: lng2 },
+          { latitude: lat3, longitude: lng3 },
+          { latitude: lat4, longitude: lng4 },
+          { latitude: lat5, longitude: lng5 }
+        ])
+    )
+  }
+)
+
+Given(
+  'an exemption for a pentagon site using OSGB36 coordinates with point 1 {string}, {string}, point 2 {string}, {string}, point 3 {string}, {string}, point 4 {string}, {string} and point 5 {string}, {string}',
+  function (
+    east1,
+    north1,
+    east2,
+    north2,
+    east3,
+    north3,
+    east4,
+    north4,
+    east5,
+    north5
+  ) {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName()
+        .andSiteDetails.forAPentagonWithOSGB36Coordinates()
+        .withCoordinatePoints([
+          { eastings: east1, northings: north1 },
+          { eastings: east2, northings: north2 },
+          { eastings: east3, northings: north3 },
+          { eastings: east4, northings: north4 },
+          { eastings: east5, northings: north5 }
+        ])
+    )
+  }
+)
+
 Given('the site details task is reached', async function () {
   await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
   await this.actor.attemptsTo(CompleteProjectName.now())
@@ -135,6 +221,46 @@ When('the site details task is completed', async function () {
 When('the triangular site coordinates are entered', async function () {
   await this.actor.attemptsTo(CompleteSiteDetails.coordinatesOnly())
 })
+
+When(
+  'the quadrilateral site coordinates are entered using add another point',
+  async function () {
+    await this.actor.attemptsTo(
+      CompleteSiteDetails.coordinatesWithAddAnotherPoint()
+    )
+  }
+)
+
+When(
+  'the pentagon site coordinates are entered using add another point',
+  async function () {
+    await this.actor.attemptsTo(
+      CompleteSiteDetails.coordinatesWithAddAnotherPoint()
+    )
+  }
+)
+
+Given(
+  'an exemption for a {int} point random polygon site using WGS84 coordinates',
+  function (coordinateCount) {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName()
+        .andSiteDetails.forARandomPolygonWithWGS84Coordinates()
+        .withRandomCoordinateCount(coordinateCount)
+    )
+  }
+)
+
+When(
+  'the {int} point random polygon coordinates are entered using add another point',
+  async function (coordinateCount) {
+    await this.actor.attemptsTo(
+      CompleteSiteDetails.coordinatesWithAddAnotherPoint()
+    )
+  }
+)
 
 Then('the site details review page shows the site details', async function () {
   await this.actor.attemptsTo(EnsurePageHeading.is('Review site details'))
@@ -182,7 +308,7 @@ Then('the coordinates entry page remains displayed', async function () {
 When(
   'the Continue button is clicked without providing any coordinates',
   async function () {
-    await this.actor.attemptsTo(ClickSaveAndContinue.now())
+    await this.actor.attemptsTo(ClickButton.withText('Continue'))
   }
 )
 
