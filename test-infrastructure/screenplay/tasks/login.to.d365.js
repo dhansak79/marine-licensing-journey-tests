@@ -36,21 +36,15 @@ export default class LoginToD365 extends Task {
   }
 
   async handleMicrosoftLogin(browseD365, credentials) {
-    // Check if login is required
     if (await browseD365.isElementVisible(D365Page.usernameField)) {
-      // Enter username
       await browseD365.fillField(D365Page.usernameField, credentials.userId)
       await browseD365.clickElement(D365Page.nextButton)
-
-      // Enter password
       await browseD365.fillField(D365Page.passwordField, credentials.password)
       await browseD365.clickElement(D365Page.signInButton)
 
-      // Handle "Stay signed in" if it appears
       try {
         await browseD365.clickElement(D365Page.staySignedInButton)
       } catch (error) {
-        // Stay signed in dialog might not appear, continue with login
         console.log('Stay signed in dialog not found, continuing...')
       }
     }
