@@ -29,7 +29,12 @@ export default class EnterMultipleCoordinatesPageInteractions {
 
   static async enterCoordinates(browseTheWeb, coordinateSystem, coordinates) {
     for (let i = 0; i < coordinates.length; i++) {
-      await this.enterSingleCoordinate(browseTheWeb, coordinateSystem, coordinates[i], i)
+      await this.enterSingleCoordinate(
+        browseTheWeb,
+        coordinateSystem,
+        coordinates[i],
+        i
+      )
     }
   }
 
@@ -80,12 +85,24 @@ export default class EnterMultipleCoordinatesPageInteractions {
   ) {
     const fieldMappings = {
       WGS84: [
-        { value: coordinate.latitude, selector: EnterMultipleCoordinatesPage.latitudeInput(coordinateIndex) },
-        { value: coordinate.longitude, selector: EnterMultipleCoordinatesPage.longitudeInput(coordinateIndex) }
+        {
+          value: coordinate.latitude,
+          selector: EnterMultipleCoordinatesPage.latitudeInput(coordinateIndex)
+        },
+        {
+          value: coordinate.longitude,
+          selector: EnterMultipleCoordinatesPage.longitudeInput(coordinateIndex)
+        }
       ],
       OSGB36: [
-        { value: coordinate.eastings, selector: EnterMultipleCoordinatesPage.eastingsInput(coordinateIndex) },
-        { value: coordinate.northings, selector: EnterMultipleCoordinatesPage.northingsInput(coordinateIndex) }
+        {
+          value: coordinate.eastings,
+          selector: EnterMultipleCoordinatesPage.eastingsInput(coordinateIndex)
+        },
+        {
+          value: coordinate.northings,
+          selector: EnterMultipleCoordinatesPage.northingsInput(coordinateIndex)
+        }
       ]
     }
 
@@ -98,8 +115,6 @@ export default class EnterMultipleCoordinatesPageInteractions {
   static async enterCoordinateField(browseTheWeb, value, selector) {
     value && (await browseTheWeb.sendKeys(selector, value))
   }
-
-
 
   static async enterPolygonCoordinatesAndContinue(browseTheWeb, siteDetails) {
     await this.enterPolygonCoordinates(browseTheWeb, siteDetails)

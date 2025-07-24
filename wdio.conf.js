@@ -23,7 +23,8 @@ export const config = {
   runner: 'local',
   baseUrl: `https://marine-licensing-frontend.${process.env.ENVIRONMENT}.cdp-int.defra.cloud/`,
   defraIdUrl: `https://cdp-defra-id-stub.${process.env.ENVIRONMENT}.cdp-int.defra.cloud`,
-
+  d365Url:
+    'https://marinelicensingdev.crm11.dynamics.com/main.aspx?appid=83ba81f8-af65-4a36-8450-3cd3bc9acb76&pagetype=entitylist&etn=incident&viewid=00000000-0000-0000-00aa-000010001030&viewType=1039',
   hostname: process.env.CHROMEDRIVER_URL || '127.0.0.1',
   port: process.env.CHROMEDRIVER_PORT || 4444,
 

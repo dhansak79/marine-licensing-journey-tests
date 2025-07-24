@@ -56,6 +56,8 @@ export const config = {
   bail: 0,
   baseUrl: `http://localhost:3000/`,
   defraIdUrl: 'http://localhost:3200',
+  d365Url:
+    'https://marinelicensingdev.crm11.dynamics.com/main.aspx?appid=83ba81f8-af65-4a36-8450-3cd3bc9acb76&pagetype=entitylist&etn=incident&viewid=00000000-0000-0000-00aa-000010001030&viewType=1039',
   waitforTimeout: 10000,
   waitforInterval: 200,
   connectionRetryTimeout: 120000,
