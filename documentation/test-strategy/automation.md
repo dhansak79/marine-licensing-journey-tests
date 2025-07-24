@@ -92,6 +92,44 @@ Feature: Complete exemption notification
 - **Allure** for rich test reporting
 - **Cross-browser testing** for compatibility assurance
 
+### **External system tests (D365 integration) - End-to-end validation**
+
+**Purpose**: Validate submission flow integration with Microsoft Dynamics 365  
+**Coverage**: Complete journey from marine licensing application through to case creation in D365
+
+```gherkin
+# Example: D365 integration testing
+Feature: Exemption submission to D365
+  Scenario: Successful case creation in D365
+    Given the user has submitted an exemption notification
+    When an MMO case officer logs into D365
+    Then the exemption reference and project name are displayed in the case record
+```
+
+**Why Playwright for D365 testing:**
+
+- **Modern browser automation** - Superior handling of single-page applications like D365
+- **Reliable element interaction** - Better wait strategies for complex dynamic content
+- **Authentication handling** - Robust support for OAuth and Microsoft login flows
+- **Cross-browser compatibility** - Consistent behaviour across different browsers
+- **Rich debugging** - Detailed error reporting and screenshot capabilities
+- **Parallel execution** - Independent browser contexts for isolated test runs
+
+**Tools & technologies**:
+
+- **Playwright** - Modern browser automation for D365 interface
+- **Screenplay pattern** - Consistent test architecture across all automation
+- **D365 Page Objects** - Specialised selectors for Dynamics 365 interface
+- **OAuth integration** - Microsoft authentication flow handling
+- **Screenshot capture** - Visual evidence collection for manual verification
+
+**Integration approach**:
+
+- **Separate browser context** - D365 tests run independently from main application tests
+- **Dedicated abilities** - `BrowseD365` ability encapsulates Playwright-specific functionality
+- **Environment-aware** - Different authentication strategies for test vs production environments
+- **Evidence collection** - Screenshots and data verification for audit trails
+
 ### **Future API tests (Service layer) - Business logic focus**
 
 **Purpose**: Test business rules, integrations, and data processing independently  

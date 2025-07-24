@@ -67,6 +67,18 @@ We are delivering a **private beta** that enables **members of the public to sub
   - **Interactions** - Low-level actions (click, verify, ensure)
 - **📍 Page Objects** (`test-infrastructure/pages/`) - Locators and selectors only
 
+### **Browser Automation Architecture**
+
+**WebDriverIO** - Main application testing
+- **Core user journeys** - Marine licensing application workflows
+- **Cross-browser compatibility** - Chrome, Firefox, Safari support
+- **Fast execution** - Optimised for rapid feedback loops
+
+**Playwright** - External system integration
+- **D365 testing** - Microsoft Dynamics 365 case verification
+- **Modern browser handling** - Superior OAuth and SPA support
+- **Independent contexts** - Isolated from main application tests
+
 ### **Authentication Integration**
 
 ```javascript
