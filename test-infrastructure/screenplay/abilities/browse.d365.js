@@ -1,4 +1,5 @@
 import { chromium } from 'playwright'
+import { takePlaywrightScreenshot } from '~/test-infrastructure/capture/index.js'
 
 export default class BrowseD365 {
   static using() {
@@ -64,6 +65,11 @@ export default class BrowseD365 {
   async waitForLoadState(state = 'networkidle') {
     const page = await this.launch()
     await page.waitForLoadState(state)
+  }
+
+  async takeScreenshot(name = 'Screenshot') {
+    const page = await this.launch()
+    return await takePlaywrightScreenshot(page, name)
   }
 
   async close() {

@@ -19,6 +19,7 @@ export default class ViewSubmittedExemptionNotification extends Task {
       )
     }
     await this.findAndClickProjectLink(browseD365)
+    await browseD365.takeScreenshot('D365 Case Record Page')
     await this.verifyReferenceField(browseD365)
   }
 
@@ -27,6 +28,7 @@ export default class ViewSubmittedExemptionNotification extends Task {
       this.exemptionReference
     )
     await browseD365.clickElement(referenceSelector)
+    await browseD365.takeScreenshot('D365 After Clicking Case Record')
   }
 
   async verifyReferenceField(browseD365) {

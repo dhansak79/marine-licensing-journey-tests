@@ -29,7 +29,7 @@ export default class EnsureThatTheExemptionDetailsAreCorrect extends Task {
   }
 
   async verifyExemptionDetails(browseD365) {
-    // Verify exemption reference
+    await browseD365.takeScreenshot('D365 Before Verifying Exemption Details')
     const referenceValue = await browseD365.getInputValue(
       D365Page.exemptionReferenceField
     )
@@ -38,7 +38,6 @@ export default class EnsureThatTheExemptionDetailsAreCorrect extends Task {
       `Expected reference to be '${this.exemption.applicationReference}' but found '${referenceValue}'`
     )
 
-    // Verify project name
     const projectNameValue = await browseD365.getInputValue(
       D365Page.projectNameField
     )
@@ -47,14 +46,12 @@ export default class EnsureThatTheExemptionDetailsAreCorrect extends Task {
       `Expected project name to be '${this.exemption.projectName}' but found '${projectNameValue}'`
     )
 
-    // Verify type
     const typeValue = await browseD365.getInputValue(D365Page.typeField)
     expect(typeValue).to.equal(
       'Exempt activity',
       `Expected type to be 'Exempt activity' but found '${typeValue}'`
     )
 
-    // Verify submitted date is today (DD/MM/YYYY format)
     const today = new Date().toLocaleDateString('en-GB')
     const submittedDateValue = await browseD365.getInputValue(
       D365Page.submittedDateField
