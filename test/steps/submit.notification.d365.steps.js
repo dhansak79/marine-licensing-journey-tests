@@ -30,7 +30,7 @@ When(
   'the internal user views the submitted exemption notification in D365',
   async function () {
     this.mmoUser = new Actor('Marcus')
-    this.mmoUser.can(BrowseD365.using())
+    this.mmoUser.can(BrowseD365.withPlaywright())
     await this.mmoUser.attemptsTo(LoginToD365.now())
     const exemptionReference = this.actor.recalls('completedExemptions')[0]
       .exemptionReference

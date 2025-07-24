@@ -2,7 +2,7 @@ import { chromium } from 'playwright'
 import { takePlaywrightScreenshot } from '~/test-infrastructure/capture/index.js'
 
 export default class BrowseD365 {
-  static using() {
+  static withPlaywright() {
     return new BrowseD365()
   }
 
