@@ -27,7 +27,6 @@ export default class ViewSubmittedExemptionNotification extends Task {
       this.exemptionReference
     )
     await browseD365.clickElement(referenceSelector)
-    await browseD365.waitForLoadState()
   }
 
   async verifyReferenceField(browseD365) {
