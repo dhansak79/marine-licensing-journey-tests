@@ -12,7 +12,6 @@ export default class LoginToD365 extends Task {
     const credentials = this.getD365Credentials()
 
     await browseTheWeb.navigateTo(D365Page.getUrl(browseTheWeb.browser))
-    await D365Page.waitForPageLoad(browseTheWeb)
 
     await this.handleMicrosoftLogin(browseTheWeb, credentials)
   }

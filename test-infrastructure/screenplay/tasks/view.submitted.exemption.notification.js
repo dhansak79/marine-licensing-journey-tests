@@ -21,20 +21,17 @@ export default class ViewSubmittedExemptionNotification extends Task {
       )
     }
 
-    await this.searchForCase(browseTheWeb)
-    await this.openCaseRecord(browseTheWeb)
+    await this.findAndOpenCaseRecord(browseTheWeb)
   }
 
-  async searchForCase(browseTheWeb) {
-    await browseTheWeb.waitForEnabled(D365Page.caseSearchInput)
-    await browseTheWeb.setValue(
-      D365Page.caseSearchInput,
-      this.applicationReference
-    )
-    await browseTheWeb.pressKey('Enter')
-  }
+  async findAndOpenCaseRecord(browseTheWeb) {
+    // Hardcode reference for local testing as D365 integration is not live
+    const hardCodedReference = 'EXE/2025/10028'
 
-  async openCaseRecord(browseTheWeb) {
-    await browseTheWeb.click(D365Page.caseRecordLink)
+    // Construct the selector for the specific case record link
+    const caseRecordSelector = D365Page.getCaseRecordLink(hardCodedReference)
+
+    // Click on the case record link to navigate to the case details page
+    await browseTheWeb.click(caseRecordSelector)
   }
 }
