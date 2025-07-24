@@ -23,7 +23,9 @@ export default class ViewSubmittedExemptionNotification extends Task {
   }
 
   async findAndClickProjectLink(browseD365) {
-    const referenceSelector = D365Page.getCaseRecordLink(this.exemptionReference)
+    const referenceSelector = D365Page.getCaseRecordLink(
+      this.exemptionReference
+    )
     await browseD365.clickElement(referenceSelector)
     await browseD365.waitForLoadState()
   }
