@@ -47,24 +47,9 @@ export default class BrowseD365 {
     return await page.locator(selector).isVisible()
   }
 
-  async waitForElement(selector) {
-    const page = await this.launch()
-    await page.locator(selector).waitFor()
-  }
-
-  async getElementText(selector) {
-    const page = await this.launch()
-    return await page.locator(selector).textContent()
-  }
-
   async getInputValue(selector) {
     const page = await this.launch()
     return await page.locator(selector).inputValue()
-  }
-
-  async waitForLoadState(state = 'networkidle') {
-    const page = await this.launch()
-    await page.waitForLoadState(state)
   }
 
   async takeScreenshot(name = 'Screenshot') {
