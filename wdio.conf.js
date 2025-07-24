@@ -14,9 +14,9 @@ const chromeProxyConfig = {
 
 const getTags = () => {
   if (process.env.ENVIRONMENT === 'test') {
-    return ['@real-defra-id']
+    return ['@real-defra-id', '@d365']
   }
-  return ['not @wip', 'not @bug', 'not @local-only']
+  return ['not @wip', 'not @bug', 'not @local-only', 'not @d365']
 }
 
 export const config = {
@@ -115,7 +115,6 @@ export const config = {
     }
 
     if (process.env.ENVIRONMENT !== 'test') {
-      // Clean up any test users created during this scenario
       if (global.testUsersCreated && global.testUsersCreated.length > 0) {
         const { DefraIdStubUserManager } = await import(
           './test-infrastructure/helpers/defra-id-stub-user-manager.js'
@@ -131,7 +130,6 @@ export const config = {
           }
         }
 
-        // Clear the list for next scenario
         global.testUsersCreated = []
       }
     }
