@@ -1,6 +1,20 @@
 import { faker } from '@faker-js/faker'
 
 export default class MarineProjectModel {
+
+  static generateProjectName() {
+    const activity = faker.helpers.arrayElement(this.ACTIVITIES)
+    const location = faker.helpers.arrayElement(this.LOCATIONS)
+    const descriptor = faker.helpers.arrayElement(this.DESCRIPTORS)
+    const randomNumber = faker.number.int({ min: 1000, max: 9999 })
+
+    return `${location} ${activity} - ${descriptor} ${randomNumber}`
+  }
+
+  static generateOversizedProjectName() {
+    return 'Construction of an Eco-Conscious Offshore Wind Farm Featuring Advanced Turbine Technology, Renewable Energy Integration Systems, and Marine Environmental Safeguards to Protect Biodiversity Across Coastal and Open Water Ecosystems While Promoting Sustainable Energy Solutions'
+  }
+
   static PROJECT_NAME_MAX_LENGTH = 250
 
   static ACTIVITIES = [
@@ -80,17 +94,4 @@ export default class MarineProjectModel {
     'Permanent Installation',
     'Research Programme'
   ]
-
-  static generateProjectName() {
-    const activity = faker.helpers.arrayElement(this.ACTIVITIES)
-    const location = faker.helpers.arrayElement(this.LOCATIONS)
-    const descriptor = faker.helpers.arrayElement(this.DESCRIPTORS)
-    const randomNumber = faker.number.int({ min: 1000, max: 9999 })
-
-    return `${location} ${activity} - ${descriptor} ${randomNumber}`
-  }
-
-  static generateOversizedProjectName() {
-    return 'Construction of an Eco-Conscious Offshore Wind Farm Featuring Advanced Turbine Technology, Renewable Energy Integration Systems, and Marine Environmental Safeguards to Protect Biodiversity Across Coastal and Open Water Ecosystems While Promoting Sustainable Energy Solutions'
-  }
 }
