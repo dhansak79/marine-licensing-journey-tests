@@ -2,13 +2,13 @@ import D365Page from '../../pages/d365.page.js'
 import Task from '../base/task.js'
 
 export default class ViewSubmittedExemptionNotification extends Task {
-  static forProject(projectName) {
-    return new ViewSubmittedExemptionNotification(projectName)
+  static forReference(exemptionReference) {
+    return new ViewSubmittedExemptionNotification(exemptionReference)
   }
 
-  constructor(projectName) {
+  constructor(exemptionReference) {
     super()
-    this.projectName = 'test'
+    this.exemptionReference = 'EXE/2025/10034'
   }
 
   async performAs(actor) {
@@ -23,14 +23,12 @@ export default class ViewSubmittedExemptionNotification extends Task {
   }
 
   async findAndClickProjectLink(browseD365) {
-    await browseD365.waitForElement(D365Page.gridLinksSelector, 180000)
-    const projectSelector = D365Page.projectLinkSelector(this.projectName)
-    await browseD365.waitForElement(projectSelector, 30000)
-    await browseD365.clickElement(projectSelector)
+    const referenceSelector = D365Page.getCaseRecordLink(this.exemptionReference)
+    await browseD365.clickElement(referenceSelector)
     await browseD365.waitForLoadState()
   }
 
   async verifyReferenceField(browseD365) {
-    await browseD365.waitForElement(D365Page.exemptionReferenceField, 30000)
+    await browseD365.waitForElement(D365Page.exemptionReferenceField)
   }
 }

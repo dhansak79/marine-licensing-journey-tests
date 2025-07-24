@@ -47,8 +47,11 @@ export default class LoginToD365 extends Task {
       await browseD365.clickElement(D365Page.signInButton)
 
       // Handle "Stay signed in" if it appears
-      if (await browseD365.isElementVisible(D365Page.staySignedInButton)) {
+      try {
         await browseD365.clickElement(D365Page.staySignedInButton)
+      } catch (error) {
+        // Stay signed in dialog might not appear, continue with login
+        console.log('Stay signed in dialog not found, continuing...')
       }
     }
   }

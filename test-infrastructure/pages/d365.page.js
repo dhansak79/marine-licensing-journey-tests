@@ -17,11 +17,8 @@ export default class D365Page {
   static submittedDateField = 'input[aria-label="Date of Submitted Date"]'
 
   // Grid selectors
-  static gridLinksSelector = '//div[@role="gridcell"]//a'
-  static projectLinkSelector = (projectName) =>
-    `//a[text()="${projectName}" and contains(@href, "entityrecord")]`
 
   static getCaseRecordLink(reference) {
-    return `//*[@role="gridcell"][@col-id="ticketnumber"][.//label[@aria-label="${reference}"]]/ancestor::div[@role="row"]//a[contains(@href, "entityrecord")]`
+    return `//*[@role="row"][.//text()[contains(., "${reference}")]]//a[contains(@href, "entityrecord") and contains(@href, "etn=incident")]`
   }
 }
