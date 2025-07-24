@@ -17,7 +17,9 @@ export default class D365Page {
 
   static waitForPageLoad(browseTheWeb) {
     // Wait for D365 to load completely
-    const isLoaded = browseTheWeb.browser.$(D365Page.caseSearchInput).isExisting()
+    const isLoaded = browseTheWeb.browser
+      .$(D365Page.caseSearchInput)
+      .isExisting()
     return isLoaded
   }
 }
