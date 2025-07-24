@@ -8,7 +8,7 @@ export default class ViewSubmittedExemptionNotification extends Task {
 
   constructor(exemptionReference) {
     super()
-    this.exemptionReference = 'EXE/2025/10034'
+    this.exemptionReference = exemptionReference
   }
 
   async performAs(actor) {
