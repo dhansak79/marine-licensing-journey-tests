@@ -43,18 +43,12 @@ When(
 Then(
   'the exemption reference and project name are displayed in the case record',
   async function () {
-    try {
-      const completedExemptions = this.actor.recalls('completedExemptions')
-      const exemption = completedExemptions[completedExemptions.length - 1]
-      await this.mmoUser.attemptsTo(
-        EnsureThatTheExemptionDetailsAreCorrect.forExemption(exemption)
-      )
-    } finally {
-      // Clean up Playwright browser
-      const browseD365 = this.mmoUser.abilityTo('BrowseD365')
-      if (browseD365) {
-        await browseD365.close()
-      }
-    }
+    const completedExemptions = this.actor.recalls('completedExemptions')
+    const exemption = completedExemptions[completedExemptions.length - 1]
+    await this.mmoUser.attemptsTo(
+      EnsureThatTheExemptionDetailsAreCorrect.forExemption(exemption)
+    )
+    const browseD365 = this.mmoUser.abilityTo('BrowseD365')
+    await browseD365.close()
   }
 )
