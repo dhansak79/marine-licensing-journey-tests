@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker'
 
 export default class MarineProjectModel {
-
   static generateProjectName() {
     const activity = faker.helpers.arrayElement(this.ACTIVITIES)
     const location = faker.helpers.arrayElement(this.LOCATIONS)
