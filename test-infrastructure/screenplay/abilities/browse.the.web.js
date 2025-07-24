@@ -63,10 +63,6 @@ export default class BrowseTheWeb extends Ability {
     }
   }
 
-  async pressKey(key) {
-    await this.browser.keys(key)
-  }
-
   async click(locator) {
     const element = await this.getElement(locator)
     await element.click()
