@@ -1,5 +1,4 @@
 import { expect } from 'chai'
-import D365Page from '~/test-infrastructure/pages/d365.page.js'
 import Task from '../base/task.js'
 
 export default class ViewSubmittedExemptionNotification extends Task {
@@ -25,13 +24,42 @@ export default class ViewSubmittedExemptionNotification extends Task {
   }
 
   async findAndOpenCaseRecord(browseTheWeb) {
-    // Hardcode reference for local testing as D365 integration is not live
-    const hardCodedReference = 'EXE/2025/10028'
+    console.log('Waiting for D365 grid to load case data...')
 
-    // Construct the selector for the specific case record link
-    const caseRecordSelector = D365Page.getCaseRecordLink(hardCodedReference)
+    // Wait for the D365 grid to actually load data
+    // The grid exists but is empty until data loads from the server
+    const maxWaitTime = 60000 // 60 seconds
+    const pollInterval = 2000 // Check every 2 seconds
+    let elapsedTime = 0
 
-    // Click on the case record link to navigate to the case details page
-    await browseTheWeb.click(caseRecordSelector)
+    while (elapsedTime < maxWaitTime) {
+      // Check if grid has loaded any case links
+      const gridLinks = await browseTheWeb.browser.$$('//div[@role="gridcell"]//a')
+      console.log(`Found ${gridLinks.length} case links after ${elapsedTime / 1000}s`)
+
+      if (gridLinks.length > 0) {
+        // Grid has data - look for test projects
+        for (let i = 0; i < Math.min(gridLinks.length, 20); i++) {
+          const text = await gridLinks[i].getText()
+          const href = await gridLinks[i].getAttribute('href')
+
+          if (text.toLowerCase().includes('test') && href && href.includes('entityrecord')) {
+            console.log(`Clicking test project: "${text}"`)
+            await gridLinks[i].click()
+            return
+          }
+        }
+
+        // Grid has data but no test projects found
+        console.log('Grid has data but no test project links found')
+        break
+      }
+
+      // Wait before next check
+      await browseTheWeb.browser.pause(pollInterval)
+      elapsedTime += pollInterval
+    }
+
+    throw new Error(`D365 grid did not load case data within ${maxWaitTime / 1000} seconds, or no test project links found`)
   }
 }

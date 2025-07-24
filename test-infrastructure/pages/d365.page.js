@@ -14,8 +14,6 @@ export default class D365Page {
   static submittedDateField = 'input[aria-label="Date of Submitted Date"]'
 
   static getCaseRecordLink(reference) {
-    // Find the gridcell containing the reference, then find the row and get the entityrecord link
-    // Uses contains(., ...) to match all text content including child elements
-    return `//*[@role="gridcell"][contains(., "${reference}")]/ancestor::div[@role="row"]//a[contains(@href, "entityrecord")]`
+    return `//*[@role="gridcell"][@col-id="ticketnumber"][.//label[@aria-label="${reference}"]]/ancestor::div[@role="row"]//a[contains(@href, "entityrecord")]`
   }
 }
