@@ -2,19 +2,19 @@ import { expect } from 'chai'
 import Task from '../base/task.js'
 
 export default class ViewSubmittedExemptionNotification extends Task {
-  static now(applicationReference) {
-    return new ViewSubmittedExemptionNotification(applicationReference)
+  static forProject(projectName) {
+    return new ViewSubmittedExemptionNotification(projectName)
   }
 
-  constructor(applicationReference) {
+  constructor(projectName) {
     super()
-    this.applicationReference = applicationReference
+    this.projectName = 'test'
   }
 
   async performAs(actor) {
     const browseTheWeb = actor.ability
 
-    if (!this.applicationReference) {
+    if (!this.projectName) {
       expect.fail(
         'Application reference is required to view submitted exemption notification'
       )
@@ -43,7 +43,7 @@ export default class ViewSubmittedExemptionNotification extends Task {
           const text = await gridLinks[i].getText()
           const href = await gridLinks[i].getAttribute('href')
 
-          if (text.toLowerCase().includes('test') && href && href.includes('entityrecord')) {
+          if (text.toLowerCase().includes(this.projectName) && href && href.includes('entityrecord')) {
             console.log(`Clicking test project: "${text}"`)
             await gridLinks[i].click()
             return
