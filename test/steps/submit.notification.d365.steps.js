@@ -3,6 +3,7 @@ import { browser } from '@wdio/globals'
 import {
   Actor,
   ApplyForExemption,
+  BrowseD365,
   BrowseTheWeb,
   ClickConfirmAndSend,
   ClickReviewAndSend,
@@ -29,7 +30,7 @@ When(
   'the internal user views the submitted exemption notification in D365',
   async function () {
     this.mmoUser = new Actor('Marcus')
-    this.mmoUser.can(BrowseTheWeb.using(browser))
+    this.mmoUser.can(BrowseD365.using())
     await this.mmoUser.attemptsTo(LoginToD365.now())
     const projectName = this.actor.recalls('completedExemptions')[0].projectName
     await this.mmoUser.attemptsTo(
@@ -41,10 +42,18 @@ When(
 Then(
   'the exemption reference and project name are displayed in the case record',
   async function () {
-    const completedExemptions = this.actor.recalls('completedExemptions')
-    const exemption = completedExemptions[completedExemptions.length - 1]
-    await this.mmoUser.attemptsTo(
-      EnsureThatTheExemptionDetailsAreCorrect.forExemption(exemption)
-    )
+    try {
+      const completedExemptions = this.actor.recalls('completedExemptions')
+      const exemption = completedExemptions[completedExemptions.length - 1]
+      await this.mmoUser.attemptsTo(
+        EnsureThatTheExemptionDetailsAreCorrect.forExemption(exemption)
+      )
+    } finally {
+      // Clean up Playwright browser
+      const browseD365 = this.mmoUser.abilityTo('BrowseD365')
+      if (browseD365) {
+        await browseD365.close()
+      }
+    }
   }
 )

@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import D365Page from '~/test-infrastructure/pages/d365.page.js'
+import D365Page from '../../pages/d365.page.js'
 import Task from '../base/task.js'
 
 export default class LoginToD365 extends Task {
@@ -8,12 +8,18 @@ export default class LoginToD365 extends Task {
   }
 
   async performAs(actor) {
-    const browseTheWeb = actor.ability
+    const browseD365 = actor.abilityTo('BrowseD365')
+
+    if (!browseD365) {
+      throw new Error('Actor must have BrowseD365 ability to login to D365')
+    }
+
     const credentials = this.getD365Credentials()
+    const d365Url =
+      'https://marinelicensingdev.crm11.dynamics.com/main.aspx?appid=83ba81f8-af65-4a36-8450-3cd3bc9acb76&pagetype=entitylist&etn=incident&viewid=00000000-0000-0000-00aa-000010001030&viewType=1039'
 
-    await browseTheWeb.navigateTo(D365Page.getUrl(browseTheWeb.browser))
-
-    await this.handleMicrosoftLogin(browseTheWeb, credentials)
+    await browseD365.navigateToUrl(d365Url)
+    await this.handleMicrosoftLogin(browseD365, credentials)
   }
 
   getD365Credentials() {
@@ -29,21 +35,21 @@ export default class LoginToD365 extends Task {
     return { userId, password }
   }
 
-  async handleMicrosoftLogin(browseTheWeb, credentials) {
-    await browseTheWeb.setValue(D365Page.usernameField, credentials.userId)
-    await browseTheWeb.click(D365Page.nextButton)
+  async handleMicrosoftLogin(browseD365, credentials) {
+    // Check if login is required
+    if (await browseD365.isElementVisible(D365Page.usernameField)) {
+      // Enter username
+      await browseD365.fillField(D365Page.usernameField, credentials.userId)
+      await browseD365.clickElement(D365Page.nextButton)
 
-    await browseTheWeb.setValue(D365Page.passwordField, credentials.password)
-    await browseTheWeb.click(D365Page.signInButton)
+      // Enter password
+      await browseD365.fillField(D365Page.passwordField, credentials.password)
+      await browseD365.clickElement(D365Page.signInButton)
 
-    await this.handleStaySignedInPrompt(browseTheWeb)
-  }
-
-  async handleStaySignedInPrompt(browseTheWeb) {
-    try {
-      await browseTheWeb.click(D365Page.staySignedInButton)
-    } catch (error) {
-      // Stay signed in prompt might not appear, continue
+      // Handle "Stay signed in" if it appears
+      if (await browseD365.isElementVisible(D365Page.staySignedInButton)) {
+        await browseD365.clickElement(D365Page.staySignedInButton)
+      }
     }
   }
 }

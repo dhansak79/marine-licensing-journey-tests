@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import D365Page from '~/test-infrastructure/pages/d365.page.js'
+import D365Page from '../../pages/d365.page.js'
 import Task from '../base/task.js'
 
 export default class EnsureThatTheExemptionDetailsAreCorrect extends Task {
@@ -13,32 +13,55 @@ export default class EnsureThatTheExemptionDetailsAreCorrect extends Task {
   }
 
   async performAs(actor) {
-    const browseTheWeb = actor.ability
+    const browseD365 = actor.abilityTo('BrowseD365')
+
+    if (!browseD365) {
+      throw new Error(
+        'Actor must have BrowseD365 ability to verify exemption details'
+      )
+    }
 
     if (!this.exemption) {
       expect.fail('Exemption data is required to verify details')
     }
 
-    await browseTheWeb.expectElementToHaveValue(
-      D365Page.exemptionReferenceField,
-      this.exemption.applicationReference
+    await this.verifyExemptionDetails(browseD365)
+  }
+
+  async verifyExemptionDetails(browseD365) {
+    // Verify exemption reference
+    const referenceValue = await browseD365.getInputValue(
+      D365Page.exemptionReferenceField
+    )
+    expect(referenceValue).to.equal(
+      this.exemption.applicationReference,
+      `Expected reference to be '${this.exemption.applicationReference}' but found '${referenceValue}'`
     )
 
-    await browseTheWeb.expectElementToHaveValue(
-      D365Page.projectNameField,
-      this.exemption.projectName
+    // Verify project name
+    const projectNameValue = await browseD365.getInputValue(
+      D365Page.projectNameField
+    )
+    expect(projectNameValue).to.equal(
+      this.exemption.projectName,
+      `Expected project name to be '${this.exemption.projectName}' but found '${projectNameValue}'`
     )
 
-    await browseTheWeb.expectElementToHaveValue(
-      D365Page.typeField,
-      'Exempt activity'
+    // Verify type
+    const typeValue = await browseD365.getInputValue(D365Page.typeField)
+    expect(typeValue).to.equal(
+      'Exempt activity',
+      `Expected type to be 'Exempt activity' but found '${typeValue}'`
     )
 
     // Verify submitted date is today (DD/MM/YYYY format)
     const today = new Date().toLocaleDateString('en-GB')
-    await browseTheWeb.expectElementToHaveValue(
-      D365Page.submittedDateField,
-      today
+    const submittedDateValue = await browseD365.getInputValue(
+      D365Page.submittedDateField
+    )
+    expect(submittedDateValue).to.equal(
+      today,
+      `Expected submitted date to be '${today}' but found '${submittedDateValue}'`
     )
   }
 }

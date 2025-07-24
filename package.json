@@ -52,6 +52,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "9.7.0",
+    "@playwright/test": "1.54.1",
     "@types/node": "24.1.0",
     "@wdio/cli": "9.12.4",
     "@wdio/cucumber-framework": "9.12.3",
@@ -63,6 +64,7 @@
     "husky": "9.1.7",
     "knip": "5.62.0",
     "neostandard": "0.12.1",
+    "playwright": "1.54.1",
     "prettier": "3.4.2",
     "typescript": "5.8.3",
     "uuid": "11.1.0",
