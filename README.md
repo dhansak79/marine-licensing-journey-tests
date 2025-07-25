@@ -324,9 +324,9 @@ docker ps
 test/
 ├── features/                          # Gherkin feature files
 └── steps/                             # Cucumber step definitions
-        
-test-infrastructure/        
-├── screenplay/        
+
+test-infrastructure/
+├── screenplay/
 │   ├── actor.js                       # Main actor with memory and abilities
 │   ├── abilities/                     # What actors can do
 │   ├── tasks/                         # High-level user workflows
