@@ -16,7 +16,7 @@ const getTags = () => {
   if (process.env.ENVIRONMENT === 'test') {
     return '@real-defra-id or @d365'
   }
-  return 'not @wip or not @bug or not @local-only or not @d365'
+  return 'not (@wip or @bug or @local-only or @d365)'
 }
 
 export const config = {

@@ -18,7 +18,7 @@ export const config = {
   specs: ['test/features/*.feature'],
   cucumberOpts: {
     require: ['test/steps/*.js'],
-    tags: ['not @wip or not @bug or not @real-defra-id or not @d365'],
+    tags: ['not (@wip or @bug or @local-only or @d365)'],
     timeout: 120000
   },
 
