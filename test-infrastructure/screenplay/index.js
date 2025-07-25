@@ -1,3 +1,4 @@
+export { default as BrowseD365 } from './abilities/browse.d365'
 export { default as BrowseTheWeb } from './abilities/browse.the.web'
 export { default as Actor } from './actor'
 export * from './constants/error-messages'

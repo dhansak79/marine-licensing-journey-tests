@@ -7,10 +7,20 @@ export default class Actor {
   constructor(name) {
     this.name = name
     this.memory = {}
+    this.abilities = new Map()
   }
 
   can(ability) {
+    // Support for legacy single ability (BrowseTheWeb)
     this.ability = ability
+
+    // Support for multiple abilities by constructor name
+    const abilityName = ability.constructor.name
+    this.abilities.set(abilityName, ability)
+  }
+
+  abilityTo(abilityName) {
+    return this.abilities.get(abilityName)
   }
 
   async attemptsTo(...tasks) {

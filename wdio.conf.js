@@ -14,16 +14,15 @@ const chromeProxyConfig = {
 
 const getTags = () => {
   if (process.env.ENVIRONMENT === 'test') {
-    return ['@real-defra-id']
+    return ['@real-defra-id', '@d365']
   }
-  return ['not @wip', 'not @bug', 'not @local-only']
+  return ['not @wip', 'not @bug', 'not @local-only', 'not @d365']
 }
 
 export const config = {
   runner: 'local',
   baseUrl: `https://marine-licensing-frontend.${process.env.ENVIRONMENT}.cdp-int.defra.cloud/`,
   defraIdUrl: `https://cdp-defra-id-stub.${process.env.ENVIRONMENT}.cdp-int.defra.cloud`,
-
   hostname: process.env.CHROMEDRIVER_URL || '127.0.0.1',
   port: process.env.CHROMEDRIVER_PORT || 4444,
 
@@ -114,7 +113,6 @@ export const config = {
     }
 
     if (process.env.ENVIRONMENT !== 'test') {
-      // Clean up any test users created during this scenario
       if (global.testUsersCreated && global.testUsersCreated.length > 0) {
         const { DefraIdStubUserManager } = await import(
           './test-infrastructure/helpers/defra-id-stub-user-manager.js'
@@ -130,7 +128,6 @@ export const config = {
           }
         }
 
-        // Clear the list for next scenario
         global.testUsersCreated = []
       }
     }

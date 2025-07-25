@@ -67,6 +67,20 @@ We are delivering a **private beta** that enables **members of the public to sub
   - **Interactions** - Low-level actions (click, verify, ensure)
 - **📍 Page Objects** (`test-infrastructure/pages/`) - Locators and selectors only
 
+### **Browser Automation Architecture**
+
+**WebDriverIO** - Main application testing
+
+- **Core user journeys** - Marine licensing application workflows
+- **Cross-browser compatibility** - Chrome, Firefox, Safari support
+- **Fast execution** - Optimised for rapid feedback loops
+
+**Playwright** - External system integration
+
+- **D365 testing** - Microsoft Dynamics 365 case verification
+- **Modern browser handling** - Superior OAuth and SPA support
+- **Independent contexts** - Isolated from main application tests
+
 ### **Authentication Integration**
 
 ```javascript
@@ -271,6 +285,20 @@ DEFRA_ID_OIDC_CONFIGURATION_URL=https://login.defra.gov.uk/...
 DEFRA_ID_CLIENT_ID=<production-client-id>
 ```
 
+### **D365 Configuration**
+
+For testing submission verification in Microsoft Dynamics 365:
+
+```bash
+D365_URL=<dynamics-365-instance-url>
+D365_USER_ID=<user-email-for-d365-login>
+D365_USER_PASSWORD=<user-password-for-d365-login>
+```
+
+These variables are used by the `BrowseD365` ability to authenticate with Microsoft Dynamics 365 and verify that exemption notifications have been successfully submitted and are visible in the case management system.
+
+**Note:** D365 integration tests only run in integrated environments. They do not run locally or in development environments where D365 connectivity is not available.
+
 ## 🔧 Quick Debugging
 
 ```bash
@@ -294,20 +322,20 @@ docker ps
 
 ```
 test/
-├── features/                  # Gherkin feature files
-└── steps/                     # Cucumber step definitions
+├── features/                          # Gherkin feature files
+└── steps/                             # Cucumber step definitions
 
 test-infrastructure/
 ├── screenplay/
-│   ├── actor.js               # Main actor with memory and abilities
-│   ├── abilities/             # What actors can do
-│   ├── tasks/                 # High-level user workflows
-│   ├── interactions/          # Single-purpose actions
-│   └── models/                # Test data models
-├── pages/                     # Page objects (locators only)
+│   ├── actor.js                       # Main actor with memory and abilities
+│   ├── abilities/                     # What actors can do
+│   ├── tasks/                         # High-level user workflows
+│   ├── interactions/                  # Single-purpose actions
+│   └── models/                        # Test data models
+├── pages/                             # Page objects (locators only)
 ├── helpers/
 │   └── defra-id-stub-user-manager.js  # DEFRA ID test user management
-└── capture/                   # Allure reporting utilities
+└── capture/                           # Allure reporting utilities
 ```
 
 ## 📜 Licence
