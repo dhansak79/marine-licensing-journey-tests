@@ -15,10 +15,7 @@ export default class LoginToD365 extends Task {
     }
 
     const credentials = this.getD365Credentials()
-    const d365Url =
-      'https://marinelicensingdev.crm11.dynamics.com/main.aspx?appid=83ba81f8-af65-4a36-8450-3cd3bc9acb76&pagetype=entitylist&etn=incident&viewid=00000000-0000-0000-00aa-000010001030&viewType=1039'
-
-    await browseD365.navigateToUrl(d365Url)
+    await browseD365.navigateToUrl(process.env.D365_URL)
     await this.handleMicrosoftLogin(browseD365, credentials)
   }
 

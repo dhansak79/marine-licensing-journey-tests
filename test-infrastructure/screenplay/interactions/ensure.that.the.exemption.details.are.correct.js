@@ -29,7 +29,6 @@ export default class EnsureThatTheExemptionDetailsAreCorrect extends Task {
   }
 
   async verifyExemptionDetails(browseD365) {
-    await browseD365.takeScreenshot('D365 Before Verifying Exemption Details')
     const referenceValue = await browseD365.getInputValue(
       D365Page.exemptionReferenceField
     )
@@ -60,5 +59,6 @@ export default class EnsureThatTheExemptionDetailsAreCorrect extends Task {
       today,
       `Expected submitted date to be '${today}' but found '${submittedDateValue}'`
     )
+    await browseD365.takeScreenshot('D365 After Verifying Exemption Details')
   }
 }

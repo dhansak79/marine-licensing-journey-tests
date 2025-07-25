@@ -32,10 +32,9 @@ When(
     this.mmoUser = new Actor('Marcus')
     this.mmoUser.can(BrowseD365.withPlaywright())
     await this.mmoUser.attemptsTo(LoginToD365.now())
-    const exemptionReference = this.actor.recalls('completedExemptions')[0]
-      .exemptionReference
+    const applicationReference = this.actor.recalls('applicationReference')
     await this.mmoUser.attemptsTo(
-      ViewSubmittedExemptionNotification.forReference(exemptionReference)
+      ViewSubmittedExemptionNotification.forReference(applicationReference)
     )
   }
 )

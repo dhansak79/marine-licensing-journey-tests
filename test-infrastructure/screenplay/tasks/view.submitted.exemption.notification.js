@@ -2,13 +2,13 @@ import D365Page from '../../pages/d365.page.js'
 import Task from '../base/task.js'
 
 export default class ViewSubmittedExemptionNotification extends Task {
-  static forReference(exemptionReference) {
-    return new ViewSubmittedExemptionNotification(exemptionReference)
+  static forReference(applicationReference) {
+    return new ViewSubmittedExemptionNotification(applicationReference)
   }
 
-  constructor(exemptionReference) {
+  constructor(applicationReference) {
     super()
-    this.exemptionReference = exemptionReference
+    this.applicationReference = applicationReference
   }
 
   async performAs(actor) {
@@ -18,20 +18,10 @@ export default class ViewSubmittedExemptionNotification extends Task {
         'Actor must have BrowseD365 ability to view D365 notifications'
       )
     }
-    await this.findAndClickProjectLink(browseD365)
-    await browseD365.takeScreenshot('D365 Case Record Page')
-    await this.verifyReferenceField(browseD365)
-  }
-
-  async findAndClickProjectLink(browseD365) {
     const referenceSelector = D365Page.getCaseRecordLink(
-      this.exemptionReference
+      this.applicationReference
     )
-    await browseD365.clickElement(referenceSelector)
     await browseD365.takeScreenshot('D365 After Clicking Case Record')
-  }
-
-  async verifyReferenceField(browseD365) {
-    await browseD365.waitForElement(D365Page.exemptionReferenceField)
+    await browseD365.clickElement(referenceSelector)
   }
 }
