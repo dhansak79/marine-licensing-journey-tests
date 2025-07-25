@@ -22,7 +22,7 @@ Feature: Submit exemption notification: A unique reference number is generated f
     When the user clicks Confirm and send
     Then the confirmation page is displayed with an application reference  
 
-  @bug-reproduction @wip
+  @bug @wip
   Scenario: Site details completion fails after switching from file upload to manual entry
     Given the user has explored file upload options during site details entry
     When the user completes site details using manual coordinate entry instead  
