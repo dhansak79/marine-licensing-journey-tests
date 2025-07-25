@@ -285,6 +285,20 @@ DEFRA_ID_OIDC_CONFIGURATION_URL=https://login.defra.gov.uk/...
 DEFRA_ID_CLIENT_ID=<production-client-id>
 ```
 
+### **D365 Configuration**
+
+For testing submission verification in Microsoft Dynamics 365:
+
+```bash
+D365_URL=<dynamics-365-instance-url>
+D365_USER_ID=<user-email-for-d365-login>
+D365_USER_PASSWORD=<user-password-for-d365-login>
+```
+
+These variables are used by the `BrowseD365` ability to authenticate with Microsoft Dynamics 365 and verify that exemption notifications have been successfully submitted and are visible in the case management system.
+
+**Note:** D365 integration tests only run in integrated environments. They do not run locally or in development environments where D365 connectivity is not available.
+
 ## 🔧 Quick Debugging
 
 ```bash
