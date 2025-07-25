@@ -322,20 +322,20 @@ docker ps
 
 ```
 test/
-├── features/                  # Gherkin feature files
-└── steps/                     # Cucumber step definitions
-
-test-infrastructure/
-├── screenplay/
-│   ├── actor.js               # Main actor with memory and abilities
-│   ├── abilities/             # What actors can do
-│   ├── tasks/                 # High-level user workflows
-│   ├── interactions/          # Single-purpose actions
-│   └── models/                # Test data models
-├── pages/                     # Page objects (locators only)
+├── features/                          # Gherkin feature files
+└── steps/                             # Cucumber step definitions
+        
+test-infrastructure/        
+├── screenplay/        
+│   ├── actor.js                       # Main actor with memory and abilities
+│   ├── abilities/                     # What actors can do
+│   ├── tasks/                         # High-level user workflows
+│   ├── interactions/                  # Single-purpose actions
+│   └── models/                        # Test data models
+├── pages/                             # Page objects (locators only)
 ├── helpers/
 │   └── defra-id-stub-user-manager.js  # DEFRA ID test user management
-└── capture/                   # Allure reporting utilities
+└── capture/                           # Allure reporting utilities
 ```
 
 ## 📜 Licence
