@@ -19,6 +19,7 @@ RUN apk add --no-cache \
 WORKDIR /app
 
 COPY . .
-RUN npm install
+RUN npm install && \
+    npx playwright install chromium
 
 ENTRYPOINT [ "./entrypoint.sh" ]
