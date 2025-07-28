@@ -25,4 +25,8 @@ export default class DashboardPage {
       actions: 'tbody tr:nth-child(1) td:nth-child(6)'
     }
   }
+
+  static continueLink(projectName) {
+    return `//tr[td[1][normalize-space(text())="${projectName}"]]//a[@aria-label="Continue to task list"]`
+  }
 }

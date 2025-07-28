@@ -4,6 +4,7 @@ import {
   Actor,
   ApplyForExemption,
   BrowseTheWeb,
+  ClickContinueLink,
   ClickProjectsHome,
   EnsureDashboardDisplaysNotification,
   EnsureDashboardSortOrder,
@@ -49,6 +50,17 @@ Given(
   }
 )
 
+Given('the user has a draft exemption notification', async function () {
+  this.actor = new Actor('Alice')
+  this.actor.can(BrowseTheWeb.using(browser))
+  this.actor.intendsTo(
+    ApplyForExemption.withCompleteData().andSiteDetails.forACircleWithWGS84Coordinates()
+  )
+  await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+  await this.actor.attemptsTo(CompleteProjectName.now())
+  await this.actor.attemptsTo(SignOut.now())
+})
+
 When('the user clicks on Projects home in the header', async function () {
   await this.actor.attemptsTo(ClickProjectsHome.now())
 })
@@ -56,6 +68,19 @@ When('the user clicks on Projects home in the header', async function () {
 When('the user navigates to the dashboard', async function () {
   await this.actor.attemptsTo(NavigateToDashboard.now())
 })
+
+When(
+  'the user continues the notification from the dashboard',
+  async function () {
+    await this.actor.attemptsTo(SignIn.now())
+    await this.actor.attemptsTo(NavigateToDashboard.now())
+    await this.actor.attemptsTo(
+      ClickContinueLink.forExemptionWithProjectName(
+        this.actor.recalls('exemption').projectName
+      )
+    )
+  }
+)
 
 Then(
   'the dashboard displays the submitted notification correctly',

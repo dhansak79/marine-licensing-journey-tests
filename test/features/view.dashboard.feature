@@ -1,4 +1,4 @@
-@issue=ML-96
+@issue=ML-96 @issue=ML-99
 Feature: View dashboard: View a list of all applications to keep track of and manage them
   As an applicant
   I want to see a list of all my applications
@@ -13,6 +13,11 @@ Feature: View dashboard: View a list of all applications to keep track of and ma
     Given the user has not submitted any notifications
     When the user navigates to the dashboard
     Then the message "You currently have no projects." is shown
+  
+  Scenario: Continue a draft notification from the dashboard
+    Given the user has a draft exemption notification
+    When the user continues the notification from the dashboard
+    Then the task list page is displayed
 
   @smoke
   Scenario: View dashboard with notifications in correct sort order
