@@ -2,6 +2,7 @@ export { default as ClickAddAnotherPoint } from './button-interactions/click.add
 export { default as ClickBack } from './button-interactions/click.back'
 export { default as ClickButton } from './button-interactions/click.button'
 export { default as ClickCancel } from './button-interactions/click.cancel'
+export { default as ClickContinueLink } from './click.continue.link'
 export { default as ClickConfirmAndSend } from './button-interactions/click.confirm.and.send'
 export { default as ClickRemovePointButton } from './button-interactions/click.remove.point.button'
 export { default as ClickReviewAndSend } from './button-interactions/click.review.and.send'
