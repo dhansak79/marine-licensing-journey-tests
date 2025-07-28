@@ -1,4 +1,4 @@
-@issue=ML-96
+@issue=ML-96 @issue=ML-99
 Feature: View dashboard: View a list of all applications to keep track of and manage them
   As an applicant
   I want to see a list of all my applications
@@ -14,7 +14,6 @@ Feature: View dashboard: View a list of all applications to keep track of and ma
     When the user navigates to the dashboard
     Then the message "You currently have no projects." is shown
   
-  @run-only
   Scenario: Continue a draft notification from the dashboard
     Given the user has a draft exemption notification
     When the user continues the notification from the dashboard
