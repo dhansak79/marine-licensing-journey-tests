@@ -25,9 +25,21 @@ export default class BrowseD365 {
       }
 
       this.browser = await chromium.launch(launchOptions)
-      this.context = await this.browser.newContext({
+
+      const contextOptions = {
         ignoreHTTPSErrors: true
-      })
+      }
+
+      const httpProxyConfig = process.env.HTTP_PROXY
+      const httpsProxyConfig = process.env.HTTPS_PROXY
+
+      if (httpProxyConfig || httpsProxyConfig) {
+        contextOptions.proxy = {
+          server: httpsProxyConfig || httpProxyConfig
+        }
+      }
+
+      this.context = await this.browser.newContext(contextOptions)
 
       this.context.setDefaultTimeout(60000)
       this.context.setDefaultNavigationTimeout(60000)
