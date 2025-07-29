@@ -19,6 +19,25 @@ export default class LoginToD365 extends Task {
     await actor.attemptsTo(LaunchD365.now())
   }
 
+  async proxyFetch(url, options) {
+    const proxyUrlConfig = process.env.HTTP_PROXY
+
+    if (!proxyUrlConfig) {
+      return fetch(url, options)
+    }
+
+    const { ProxyAgent } = await import('undici')
+
+    return fetch(url, {
+      ...options,
+      dispatcher: new ProxyAgent({
+        uri: proxyUrlConfig,
+        keepAliveTimeout: 10,
+        keepAliveMaxTimeout: 10
+      })
+    })
+  }
+
   async getD365AccessToken() {
     const userId = process.env.D365_USER_ID
     const password = process.env.D365_USER_PASSWORD
@@ -44,7 +63,7 @@ export default class LoginToD365 extends Task {
       formData.append('username', userId)
       formData.append('password', password)
 
-      const response = await fetch(tokenEndpoint, {
+      const response = await this.proxyFetch(tokenEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
