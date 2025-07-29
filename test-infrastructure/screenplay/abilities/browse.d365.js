@@ -30,10 +30,12 @@ export default class BrowseD365 {
         ignoreHTTPSErrors: true
       }
 
-      const proxyUrlConfig = process.env.HTTP_PROXY
-      if (proxyUrlConfig) {
+      const httpProxyConfig = process.env.HTTP_PROXY
+      const httpsProxyConfig = process.env.HTTPS_PROXY
+
+      if (httpProxyConfig || httpsProxyConfig) {
         contextOptions.proxy = {
-          server: proxyUrlConfig
+          server: httpsProxyConfig || httpProxyConfig
         }
       }
 
