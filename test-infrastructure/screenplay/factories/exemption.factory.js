@@ -1,4 +1,4 @@
-import FileGenerator from '../../helpers/file-generator.js'
+import CoordinateFiles from '../../helpers/coordinate-files.js'
 import {
   ActivityDescriptionModel,
   FileTypeModel,
@@ -79,15 +79,25 @@ export default class ExemptionFactory {
     const { filePath, generateFile } = options
     const actualFilePath = generateFile ? generateFile() : filePath
 
-    return this.createBaseExemption({
-      siteDetails: {
-        ...SiteDetailsFactory.createFileUpload(),
-        fileType:
-          fileType === 'kml'
-            ? FileTypeModel.generateKML()
-            : FileTypeModel.generateShapefile(),
-        ...(actualFilePath && { filePath: actualFilePath })
+    const siteDetails = {
+      ...SiteDetailsFactory.createFileUpload(),
+      fileType:
+        fileType === 'kml'
+          ? FileTypeModel.generateKML()
+          : FileTypeModel.generateShapefile(),
+      ...(actualFilePath && { filePath: actualFilePath })
+    }
+
+    if (actualFilePath) {
+      const expectedData =
+        CoordinateFiles.loadExpectedCoordinates(actualFilePath)
+      if (expectedData?.extractedCoordinates) {
+        siteDetails.expectedCoordinates = expectedData.extractedCoordinates
       }
+    }
+
+    return this.createBaseExemption({
+      siteDetails
     })
   }
 
@@ -124,13 +134,19 @@ export default class ExemptionFactory {
 
   static createShapefileUpload() {
     return this.createFileUploadBase('shapefile', {
-      generateFile: () => FileGenerator.generateTemporaryValidShapefile()
+      filePath: 'test/resources/valid-shapefile.zip'
     })
   }
 
   static createShapefileVirusUpload() {
     return this.createFileUploadBase('shapefile', {
-      generateFile: () => FileGenerator.generateTemporaryVirusShapefile()
+      filePath: 'test/resources/mygeodata-virus.zip'
+    })
+  }
+
+  static createShapefileLargeUpload() {
+    return this.createFileUploadBase('shapefile', {
+      filePath: 'test/resources/mygeodata-large.zip'
     })
   }
 
