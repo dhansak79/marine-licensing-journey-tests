@@ -28,6 +28,7 @@ RUN update-ca-certificates
 WORKDIR /app
 
 COPY . .
-RUN npm install
+RUN npm install \
+    && npx playwright install
 
 ENTRYPOINT [ "./entrypoint.sh" ]
