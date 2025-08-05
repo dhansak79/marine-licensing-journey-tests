@@ -35,7 +35,7 @@ export default class EnsureDashboardDisplaysNotification extends Task {
     )
 
     const today = new Date().toLocaleDateString('en-GB', {
-      day: '2-digit',
+      day: 'numeric',
       month: 'short',
       year: 'numeric'
     })

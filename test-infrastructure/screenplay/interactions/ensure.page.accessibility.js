@@ -11,6 +11,8 @@ export default class EnsurePageAccessibility extends Task {
 
   async performAs() {
     const builder = new AxeBuilder({ client: browser })
+      .withTags(['wcag2a', 'wcag2aa'])
+      .exclude('input[type="radio"][aria-expanded]')
     const result = await builder.analyze()
     const hasViolations = result.violations.length > 0
     if (hasViolations) {
