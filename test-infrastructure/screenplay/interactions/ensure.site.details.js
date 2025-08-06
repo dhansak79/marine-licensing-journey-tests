@@ -83,7 +83,7 @@ export default class EnsureSiteDetails extends Task {
     }
 
     if (siteDetails.siteType === 'boundary') {
-      await this.verifyBoundarySiteDisplay(browseTheWeb)
+      await this.verifyBoundarySiteDisplay(browseTheWeb, siteDetails)
       return
     }
 
@@ -97,8 +97,19 @@ export default class EnsureSiteDetails extends Task {
     await browseTheWeb.isDisplayed(ReviewSiteDetailsPage.widthValue)
   }
 
-  async verifyBoundarySiteDisplay(browseTheWeb) {
-    await browseTheWeb.isDisplayed(ReviewSiteDetailsPage.coordinatesValue)
+  async verifyBoundarySiteDisplay(browseTheWeb, siteDetails) {
+    const coordinates = siteDetails?.coordinates || []
+
+    // Always verify the start and end points
+    await browseTheWeb.isDisplayed(ReviewSiteDetailsPage.startAndEndPointsValue)
+
+    // Dynamically verify remaining points (Point 2, Point 3, etc.)
+    for (let i = 1; i < coordinates.length; i++) {
+      const pointNumber = i + 1
+      await browseTheWeb.isDisplayed(
+        ReviewSiteDetailsPage.getPolygonPointValue(pointNumber)
+      )
+    }
   }
 
   async verifyExtractedCoordinates(browseTheWeb, actor) {
@@ -140,7 +151,7 @@ export default class EnsureSiteDetails extends Task {
     }
 
     if (siteDetails?.siteType === 'boundary') {
-      return 'Enter multiple sets of coordinates to mark the boundary of the site'
+      return 'Manually enter multiple sets of coordinates to mark the boundary of the site'
     }
 
     expect.fail(

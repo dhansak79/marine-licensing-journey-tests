@@ -30,6 +30,15 @@ export default class ReviewSiteDetailsPage extends CommonElementsPage {
     '//dt[contains(text(), "File uploaded")]/following-sibling::dd'
   static extractedCoordinatesValue =
     '//dt[contains(text(), "Extracted")]/following-sibling::dd'
+  static startAndEndPointsValue =
+    '//dt[contains(text(), "Start and end points")]/following-sibling::dd'
+  static point2Value = '//dt[contains(text(), "Point 2")]/following-sibling::dd'
+  static point3Value = '//dt[contains(text(), "Point 3")]/following-sibling::dd'
+
+  static getPolygonPointValue(pointNumber) {
+    return `//dt[contains(text(), "Point ${pointNumber}")]/following-sibling::dd`
+  }
+
   static saveAndContinueButton = 'button*=Save and continue'
   static cancelLink = 'a*=Cancel'
   static backLink = 'a.govuk-back-link'

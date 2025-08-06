@@ -33,15 +33,21 @@ export default class CompleteSiteDetails extends Task {
     return new CompleteSiteDetails(true, false)
   }
 
+  static toReview() {
+    return new CompleteSiteDetails(false, false, false, true)
+  }
+
   constructor(
     saveAndContinue = false,
     coordinatesOnly = false,
-    useAddAnotherPoint = false
+    useAddAnotherPoint = false,
+    toReviewOnly = false
   ) {
     super()
     this.saveAndContinue = saveAndContinue
     this.coordinatesOnly = coordinatesOnly
     this.useAddAnotherPoint = useAddAnotherPoint
+    this.toReviewOnly = toReviewOnly
   }
 
   async performAs(actor) {
@@ -54,6 +60,8 @@ export default class CompleteSiteDetails extends Task {
       await this.completeFileUploadFlow()
     } else if (this.coordinatesOnly) {
       await this.completePolygonFlow()
+    } else if (this.toReviewOnly) {
+      await this.completePolygonToReviewFlow()
     } else {
       await this.completeManualCoordinatesFlow()
     }
@@ -105,6 +113,15 @@ export default class CompleteSiteDetails extends Task {
   async completePolygonFlow() {
     await this.completeFlowUpToCoordinates()
     await EnterMultipleCoordinatesPageInteractions.enterPolygonCoordinates(
+      this.browseTheWeb,
+      this.siteDetails,
+      this.useAddAnotherPoint
+    )
+  }
+
+  async completePolygonToReviewFlow() {
+    await this.completeFlowUpToCoordinates()
+    await EnterMultipleCoordinatesPageInteractions.enterPolygonCoordinatesAndContinue(
       this.browseTheWeb,
       this.siteDetails,
       this.useAddAnotherPoint
