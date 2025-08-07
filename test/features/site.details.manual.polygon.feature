@@ -1,4 +1,4 @@
-@issue=ML-16 @issue=ML-17 @issue=ML-18 @issue=ML-19 @issue=ML-38
+@issue=ML-16 @issue=ML-17 @issue=ML-18 @issue=ML-19 @issue=ML-38 @issue=ML-121
 Feature: Site details: The user marks the boundary of a polygon site manually using WGS84 or OSGB36 coordinates
   These scenarios test the user journey for manually entering polygon site coordinates, covering:
   
@@ -7,6 +7,7 @@ Feature: Site details: The user marks the boundary of a polygon site manually us
   - ML-18: Choosing the coordinate system for latitude/longitude (WGS84) or eastings/northings (OSGB36)
   - ML-19: Entering multiple sets of coordinates to mark the boundary of a triangular site
   - ML-38: Adding another set of coordinates to a polygon site (extending beyond 3 points)
+  - ML-121: Reviewing polygon site details with enhanced coordinate value validation
 
   Scenario Outline: Successfully entering triangular site coordinates using WGS84 coordinates with <lat1>, <lng1>, <lat2>, <lng2>, <lat3>, <lng3>
     Given an exemption for a triangular site using WGS84 coordinates with point 1 "<lat1>", "<lng1>", point 2 "<lat2>", "<lng2>" and point 3 "<lat3>", "<lng3>"

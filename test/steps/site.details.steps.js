@@ -315,6 +315,7 @@ Then(
   async function () {
     await this.actor.attemptsTo(EnsurePageHeading.is('Review site details'))
     await this.actor.attemptsTo(EnsureSiteDetails.areCorrect())
+    await this.actor.attemptsTo(ClickSaveAndContinue.now())
   }
 )
 
