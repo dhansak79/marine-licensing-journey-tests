@@ -98,18 +98,59 @@ export default class EnsureSiteDetails extends Task {
   }
 
   async verifyBoundarySiteDisplay(browseTheWeb, siteDetails) {
-    const coordinates = siteDetails?.coordinates || []
+    // Fix: coordinates are in polygonData.coordinates, not siteDetails.coordinates
+    const coordinates =
+      siteDetails?.polygonData?.coordinates || siteDetails?.coordinates || []
 
-    // Always verify the start and end points
     await browseTheWeb.isDisplayed(ReviewSiteDetailsPage.startAndEndPointsValue)
+    await this.verifyStartAndEndPointsContent(browseTheWeb, coordinates)
 
-    // Dynamically verify remaining points (Point 2, Point 3, etc.)
     for (let i = 1; i < coordinates.length; i++) {
       const pointNumber = i + 1
+      const coordinate = coordinates[i]
+
       await browseTheWeb.isDisplayed(
         ReviewSiteDetailsPage.getPolygonPointValue(pointNumber)
       )
+
+      await this.verifyCoordinatePointContent(
+        browseTheWeb,
+        pointNumber,
+        coordinate
+      )
     }
+  }
+
+  async verifyStartAndEndPointsContent(browseTheWeb, coordinates) {
+    if (coordinates.length === 0) return
+
+    const startPoint = coordinates[0]
+    const expectedStartText = this.formatCoordinateForDisplay(startPoint)
+
+    // For closed polygons, start and end points are the same coordinate
+    // The app automatically closes the polygon back to the start point
+    await browseTheWeb.expectElementToContainText(
+      ReviewSiteDetailsPage.startAndEndPointsValue,
+      expectedStartText
+    )
+  }
+
+  async verifyCoordinatePointContent(browseTheWeb, pointNumber, coordinate) {
+    const expectedText = this.formatCoordinateForDisplay(coordinate)
+
+    await browseTheWeb.expectElementToContainText(
+      ReviewSiteDetailsPage.getPolygonPointValue(pointNumber),
+      expectedText
+    )
+  }
+
+  formatCoordinateForDisplay(coordinate) {
+    if (coordinate.latitude && coordinate.longitude) {
+      return `${coordinate.latitude}, ${coordinate.longitude}`
+    } else if (coordinate.eastings && coordinate.northings) {
+      return `${coordinate.eastings}, ${coordinate.northings}`
+    }
+    throw new Error(`Invalid coordinate format: ${JSON.stringify(coordinate)}`)
   }
 
   async verifyExtractedCoordinates(browseTheWeb, actor) {

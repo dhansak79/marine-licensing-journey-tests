@@ -229,6 +229,24 @@ When(
   }
 )
 
+When(
+  'the quadrilateral site coordinates are entered and continued to review',
+  async function () {
+    await this.actor.attemptsTo(
+      new CompleteSiteDetails(false, false, true, true)
+    )
+  }
+)
+
+When(
+  'the pentagon site coordinates are entered and continued to review',
+  async function () {
+    await this.actor.attemptsTo(
+      new CompleteSiteDetails(false, false, true, true)
+    )
+  }
+)
+
 Then('the polygon coordinate entry page is displayed', async function () {
   await this.actor.attemptsTo(
     EnsurePageHeading.is(
@@ -297,7 +315,6 @@ Then(
   async function () {
     await this.actor.attemptsTo(EnsurePageHeading.is('Review site details'))
     await this.actor.attemptsTo(EnsureSiteDetails.areCorrect())
-    await this.actor.attemptsTo(ClickSaveAndContinue.now())
   }
 )
 
