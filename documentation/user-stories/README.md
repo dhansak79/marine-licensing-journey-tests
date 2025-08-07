@@ -27,6 +27,7 @@ This directory contains user stories for the marine licensing application under 
 | ML-84    | Submit notification                              | [ML-84.submit.notification.md](./ML-84.submit.notification.md)                                                           | [submit.notification.feature](../../test/features/submit.notification.feature)                                                                                                                                                                                                                                                                                                                                                                                           |
 | ML-96    | View dashboard                                   | [ML-96.view.dashboard.md](./ML-96.view.dashboard.md)                                                                     | [view.dashboard.feature](../../test/features/view.dashboard.feature)                                                                                                                                                                                                                                                                                                                                                                                                     |
 | ML-99    | Continue draft notification from dashboard       | [ML-99.continue.draft.notification.from.dashboard.md](./ML-99.continue.draft.notification.from.dashboard.md)             | [view.dashboard.feature](../../test/features/view.dashboard.feature)                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ML-121   | Polygon review site details                      | [ML-121.polygon.review.site.details.md](./ML-121.polygon.review.site.details.md)                                         | [site.details.review.polygon.feature](../../test/features/site.details.review.polygon.feature) + [Frontend Integration Tests](https://github.com/DEFRA/marine-licensing-frontend/tree/main/tests/integration/review-site-details/)                                                                                                                                                                                                                                       |
 | ML-140   | File upload check your answers                   | [ML-140.file.upload.check.your.answers.md](./ML-140.file.upload.check.your.answers.md)                                   | [check.your.answers.feature](../../test/features/check.your.answers.feature) + [Frontend Integration Tests](https://github.com/DEFRA/marine-licensing-frontend/tree/main/tests)                                                                                                                                                                                                                                                                                          |
 | ML-379   | View submitted exemption notifications           | [ML-379.submission.of.case.to.d365.md](./ML-379.submission.of.case.to.d365.md)                                           | [submit.notification.to.d365.feature](../../test/features/submit.notification.to.d365.feature)                                                                                                                                                                                                                                                                                                                                                                           |
 | ML-543   | Service name verification                        | [ML-543.service.name.verification.md](./ML-543.service.name.verification.md)                                             | [service.name.verification.feature](../../test/features/service.name.verification.feature)                                                                                                                                                                                                                                                                                                                                                                               |
@@ -50,6 +51,7 @@ This directory contains user stories for the marine licensing application under 
 - ✅ **ML-69**: Choose file type to upload (File type selection for site location upload workflow - KML and Shapefile options with validation)
 - ✅ **ML-70**: Upload a coordinate file (Complete KML and Shapefile upload functionality with comprehensive validation including virus scanning, file size limits, and file type validation)
 - ✅ **ML-74**: Review site details (file upload) (Review uploaded coordinate files with metadata display and task completion for both KML and Shapefile uploads)
+- ✅ **ML-121**: Polygon review site details (Complete polygon site review functionality with enhanced coordinate value validation and comprehensive test coverage for triangular, square, and pentagon polygons in both WGS84 and OSGB36 coordinate systems)
 - ✅ **ML-82**: Check answers before sending your information (Summary page displaying all notification details before submission)
 - ✅ **ML-84**: Submit notification (Submit exemption notification to MMO and display confirmation page with reference number)
 - ✅ **ML-96**: View dashboard (Complete dashboard functionality displaying all user exemptions with proper sorting and empty state handling)
@@ -75,37 +77,6 @@ Feature files are tagged with `@issue=ML-n` where `n` corresponds to the user st
 1. **Product owners/business analysts**: Reference user story files for requirements and acceptance criteria
 2. **Developers**: Use both user stories and feature files to understand implementation requirements
 3. **Testers**: Feature files contain the automated test scenarios that validate the user stories
-
-## File structure
-
-```
-documentation/user-stories/
-├── README.md                                                 # This file
-├── ML-1.provide.project.name.and.create.exemption.md         # Project name entry
-├── ML-9.view.the.task.list.md                                # Task list functionality
-├── ML-10.provide.activity.dates.md                           # Activity dates entry with comprehensive validation
-├── ML-11.provide.activity.description.md                     # Activity description entry
-├── ML-12.provide.or.withhold.public.register.content.md      # Public register consent
-├── ML-16.choose.file.upload.or.manual.coordinate.entry.md    # Site location options
-├── ML-17.choose.circle.or.coordinate.list.entry.md           # Coordinate entry options (manual path)
-├── ML-18.choose.coordinate.system.md                         # Coordinate system selection (manual path)
-├── ML-19.enter.coordinate.for.polygon.site.md                # Enter multiple coordinates for polygon sites (manual path)
-├── ML-21.generate.application.reference.md                   # Generate application reference (reference number generation)
-├── ML-38.add.another.set.of.coordinates.to.a.polygon.site.md # Add another set of coordinates to a polygon site (manual path)
-├── ML-35.enter.centre.point.of.a.circle.md                   # Enter centre point of a circle (manual path)
-├── ML-36.enter.width.of.circular.site.md                     # Enter width of circular site (manual path)
-├── ML-37.review.circular.site.details.md                     # Review circular site details (manual path)
-├── ML-69.choose.file.to.upload.md                            # Choose file type to upload (file upload path)
-├── ML-70.upload.a.coordinate.file.md                         # Upload a coordinate file (file upload path)
-├── ML-74.review.site.details.md                              # Review site details for file upload (file upload path)
-├── ML-82.check.answers.circular.site.md                      # Check answers before sending your information
-├── ML-84.submit.notification.md                              # Submit notification and show confirmation
-├── ML-96.view.dashboard.md                                   # View dashboard with all user exemptions
-├── ML-99.continue.draft.notification.from.dashboard.md       # Continue draft notification from dashboard
-├── ML-140.file.upload.check.your.answers.md                  # File upload check your answers (with integration tests)
-├── ML-379.submission.of.case.to.d365.md                      # View submitted exemption notifications (MMO internal users)
-└── ML-543.service.name.verification.md                       # Service name verification across all pages
-```
 
 ## Test Coverage Strategy
 
