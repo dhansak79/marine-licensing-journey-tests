@@ -116,8 +116,16 @@ export default class EnterMultipleCoordinatesPageInteractions {
     value && (await browseTheWeb.sendKeys(selector, value))
   }
 
-  static async enterPolygonCoordinatesAndContinue(browseTheWeb, siteDetails) {
-    await this.enterPolygonCoordinates(browseTheWeb, siteDetails)
+  static async enterPolygonCoordinatesAndContinue(
+    browseTheWeb,
+    siteDetails,
+    useAddAnotherPoint = false
+  ) {
+    await this.enterPolygonCoordinates(
+      browseTheWeb,
+      siteDetails,
+      useAddAnotherPoint
+    )
     await browseTheWeb.click(EnterMultipleCoordinatesPage.continueButton)
   }
 }

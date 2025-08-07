@@ -83,7 +83,7 @@ export default class EnsureSiteDetails extends Task {
     }
 
     if (siteDetails.siteType === 'boundary') {
-      await this.verifyBoundarySiteDisplay(browseTheWeb)
+      await this.verifyBoundarySiteDisplay(browseTheWeb, siteDetails)
       return
     }
 
@@ -97,8 +97,60 @@ export default class EnsureSiteDetails extends Task {
     await browseTheWeb.isDisplayed(ReviewSiteDetailsPage.widthValue)
   }
 
-  async verifyBoundarySiteDisplay(browseTheWeb) {
-    await browseTheWeb.isDisplayed(ReviewSiteDetailsPage.coordinatesValue)
+  async verifyBoundarySiteDisplay(browseTheWeb, siteDetails) {
+    // Fix: coordinates are in polygonData.coordinates, not siteDetails.coordinates
+    const coordinates =
+      siteDetails?.polygonData?.coordinates || siteDetails?.coordinates || []
+
+    await browseTheWeb.isDisplayed(ReviewSiteDetailsPage.startAndEndPointsValue)
+    await this.verifyStartAndEndPointsContent(browseTheWeb, coordinates)
+
+    for (let i = 1; i < coordinates.length; i++) {
+      const pointNumber = i + 1
+      const coordinate = coordinates[i]
+
+      await browseTheWeb.isDisplayed(
+        ReviewSiteDetailsPage.getPolygonPointValue(pointNumber)
+      )
+
+      await this.verifyCoordinatePointContent(
+        browseTheWeb,
+        pointNumber,
+        coordinate
+      )
+    }
+  }
+
+  async verifyStartAndEndPointsContent(browseTheWeb, coordinates) {
+    if (coordinates.length === 0) return
+
+    const startPoint = coordinates[0]
+    const expectedStartText = this.formatCoordinateForDisplay(startPoint)
+
+    // For closed polygons, start and end points are the same coordinate
+    // The app automatically closes the polygon back to the start point
+    await browseTheWeb.expectElementToContainText(
+      ReviewSiteDetailsPage.startAndEndPointsValue,
+      expectedStartText
+    )
+  }
+
+  async verifyCoordinatePointContent(browseTheWeb, pointNumber, coordinate) {
+    const expectedText = this.formatCoordinateForDisplay(coordinate)
+
+    await browseTheWeb.expectElementToContainText(
+      ReviewSiteDetailsPage.getPolygonPointValue(pointNumber),
+      expectedText
+    )
+  }
+
+  formatCoordinateForDisplay(coordinate) {
+    if (coordinate.latitude && coordinate.longitude) {
+      return `${coordinate.latitude}, ${coordinate.longitude}`
+    } else if (coordinate.eastings && coordinate.northings) {
+      return `${coordinate.eastings}, ${coordinate.northings}`
+    }
+    throw new Error(`Invalid coordinate format: ${JSON.stringify(coordinate)}`)
   }
 
   async verifyExtractedCoordinates(browseTheWeb, actor) {
@@ -140,7 +192,7 @@ export default class EnsureSiteDetails extends Task {
     }
 
     if (siteDetails?.siteType === 'boundary') {
-      return 'Enter multiple sets of coordinates to mark the boundary of the site'
+      return 'Manually enter multiple sets of coordinates to mark the boundary of the site'
     }
 
     expect.fail(
