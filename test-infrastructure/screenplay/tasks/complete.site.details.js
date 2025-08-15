@@ -7,6 +7,7 @@ import {
 } from '../interactions/index.js'
 import Memory from '../memory.js'
 import {
+  BeforeYouStartSiteDetailsPageInteractions,
   EnterCoordinatesCentrePointPageInteractions,
   EnterMultipleCoordinatesPageInteractions,
   HowDoYouWantToEnterTheCoordinatesPageInteractions,
@@ -68,6 +69,9 @@ export default class CompleteSiteDetails extends Task {
   }
 
   async completeFileUploadFlow() {
+    await BeforeYouStartSiteDetailsPageInteractions.clickContinue(
+      this.browseTheWeb
+    )
     await HowDoYouWantToProvideCoordinatesPageInteractions.selectCoordinatesInputMethodAndContinue(
       this.browseTheWeb,
       this.siteDetails.coordinatesEntryMethod
@@ -82,13 +86,14 @@ export default class CompleteSiteDetails extends Task {
       await this.actor.attemptsTo(
         UploadFileAndContinue.withPath(this.siteDetails.filePath)
       )
+
+      // After file upload, we land on "Review site details" page and need to continue
+      if (this.saveAndContinue) {
+        await this.actor.attemptsTo(ClickSaveAndContinue.now())
+        this.actor.updates(Memory.markTaskCompleted('siteDetails'))
+      }
     } else {
       expect.fail(ERROR_MESSAGES.MISSING_DATA('File path', 'site details'))
-    }
-
-    if (this.saveAndContinue) {
-      await this.actor.attemptsTo(ClickSaveAndContinue.now())
-      this.actor.updates(Memory.markTaskCompleted('siteDetails'))
     }
   }
 
@@ -134,6 +139,9 @@ export default class CompleteSiteDetails extends Task {
   }
 
   async completeFlowUpToCoordinates() {
+    await BeforeYouStartSiteDetailsPageInteractions.clickContinue(
+      this.browseTheWeb
+    )
     await HowDoYouWantToProvideCoordinatesPageInteractions.selectCoordinatesInputMethodAndContinue(
       this.browseTheWeb,
       this.siteDetails.coordinatesEntryMethod
@@ -156,7 +164,9 @@ export default class CompleteSiteDetails extends Task {
         this.browseTheWeb,
         this.siteDetails.circleData.width
       )
-    } catch {}
+    } catch {
+      // If the width page is not present, we can just continue
+    }
   }
 
   validateTestData(actor) {

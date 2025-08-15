@@ -15,6 +15,7 @@ import {
   ClickRemovePointButton,
   ClickSaveAndContinue,
   CompleteProjectName,
+  ContinueFromBeforeYouStartSiteDetailsPage,
   EnsureCoordinateError,
   EnsureErrorDisplayed,
   EnsureErrorNotDisplayed,
@@ -37,6 +38,7 @@ Given('a user is providing site details', async function () {
   await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
   await this.actor.attemptsTo(CompleteProjectName.now())
   await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
+  await this.actor.attemptsTo(ContinueFromBeforeYouStartSiteDetailsPage.now())
 })
 
 Given(
@@ -190,6 +192,7 @@ Given(
     await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
     await this.actor.attemptsTo(CompleteProjectName.now())
     await this.actor.attemptsTo(SelectTheTask.withName('Site details'))
+    await this.actor.attemptsTo(ContinueFromBeforeYouStartSiteDetailsPage.now())
     await this.actor.attemptsTo(
       NavigateToSiteDetailsPage.enterPolygonOSGB36CoordinatesPageOnly()
     )
