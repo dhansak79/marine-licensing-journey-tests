@@ -8,6 +8,7 @@ import {
 import Memory from '../memory.js'
 import {
   BeforeYouStartSiteDetailsPageInteractions,
+  DoYouNeedToTellUsAboutMoreThanOneSitePageInteractions,
   EnterCoordinatesCentrePointPageInteractions,
   EnterMultipleCoordinatesPageInteractions,
   HowDoYouWantToEnterTheCoordinatesPageInteractions,
@@ -145,6 +146,9 @@ export default class CompleteSiteDetails extends Task {
     await HowDoYouWantToProvideCoordinatesPageInteractions.selectCoordinatesInputMethodAndContinue(
       this.browseTheWeb,
       this.siteDetails.coordinatesEntryMethod
+    )
+    await DoYouNeedToTellUsAboutMoreThanOneSitePageInteractions.selectNoAndContinue(
+      this.browseTheWeb
     )
     await HowDoYouWantToEnterTheCoordinatesPageInteractions.selectSiteTypeAndContinue(
       this.browseTheWeb,
