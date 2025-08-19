@@ -12,7 +12,7 @@ Feature: Back link navigation in Site details: State preservation during back na
     Given a user is providing site details
     And the "How do you want to enter the coordinates?" page has been reached
     When the Back link is clicked
-    Then the manual coordinate entry method is selected
+    Then the multiple sites option is selected
 
   Scenario: Using the back link from the coordinate system page preserves selections
     Given a user is providing site details

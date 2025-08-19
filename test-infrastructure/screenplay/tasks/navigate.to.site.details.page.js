@@ -4,6 +4,7 @@ import {
   EnterCoordinatesCentrePointPageInteractions,
   HowDoYouWantToEnterTheCoordinatesPageInteractions,
   HowDoYouWantToProvideCoordinatesPageInteractions,
+  DoYouNeedToTellUsAboutMoreThanOneSitePageInteractions,
   WhatCoordinateSystemPageInteractions
 } from '../page-interactions/index.js'
 
@@ -62,6 +63,9 @@ export default class NavigateToSiteDetailsPage extends Task {
     return {
       'coordinates-entry-method': async (browseTheWeb) => {
         await HowDoYouWantToProvideCoordinatesPageInteractions.navigateToCoordinatesEntryMethod(
+          browseTheWeb
+        )
+        await DoYouNeedToTellUsAboutMoreThanOneSitePageInteractions.selectNoAndContinue(
           browseTheWeb
         )
       },
@@ -134,6 +138,9 @@ export default class NavigateToSiteDetailsPage extends Task {
     await HowDoYouWantToProvideCoordinatesPageInteractions.navigateToCoordinatesEntryMethod(
       browseTheWeb
     )
+    await DoYouNeedToTellUsAboutMoreThanOneSitePageInteractions.selectNoAndContinue(
+      browseTheWeb
+    )
     await HowDoYouWantToEnterTheCoordinatesPageInteractions.selectCircularSiteAndContinue(
       browseTheWeb
     )
@@ -141,6 +148,9 @@ export default class NavigateToSiteDetailsPage extends Task {
 
   async navigateToBoundaryCoordinateSystem(browseTheWeb) {
     await HowDoYouWantToProvideCoordinatesPageInteractions.navigateToCoordinatesEntryMethod(
+      browseTheWeb
+    )
+    await DoYouNeedToTellUsAboutMoreThanOneSitePageInteractions.selectNoAndContinue(
       browseTheWeb
     )
     await HowDoYouWantToEnterTheCoordinatesPageInteractions.selectSiteTypeAndContinue(
