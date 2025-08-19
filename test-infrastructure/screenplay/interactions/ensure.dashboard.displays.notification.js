@@ -26,7 +26,7 @@ export default class EnsureDashboardDisplaysNotification extends Task {
 
     await browseTheWeb.expectElementToContainText(
       DashboardPage.locators.firstRowCells.type,
-      'Exempt activity'
+      'Exempt activity notification'
     )
 
     await browseTheWeb.expectElementToContainText(
