@@ -144,7 +144,7 @@ export default class EnsureCheckYourAnswersPage extends Task {
         CheckYourAnswersPage.locators.siteDetails.coordinateSystemValue
       )
 
-      if (actualText.trim() !== expectedDisplayText) {
+      if (actualText.trim().replaceAll('\n', ' ') !== expectedDisplayText) {
         expect.fail(
           `Coordinate system mismatch. Expected: "${expectedDisplayText}", but found: "${actualText}"`
         )

@@ -123,6 +123,7 @@ npm install
 # Local development (requires locally running services)
 npm run test:local
 npm run test:local:debug
+npm run test:local:headless
 
 # Smoke testing - Run core user journey tests quickly
 npm run test:local -- --cucumberOpts.tags "@smoke"
