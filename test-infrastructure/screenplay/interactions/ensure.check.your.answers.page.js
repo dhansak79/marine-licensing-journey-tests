@@ -1,5 +1,6 @@
 import { expect } from 'chai'
 import CheckYourAnswersPage from '~/test-infrastructure/pages/check.your.answers.page.js'
+import ReviewSiteDetailsPage from '~/test-infrastructure/pages/review.site.details.page.js'
 import Task from '../base/task.js'
 
 export default class EnsureCheckYourAnswersPage extends Task {
@@ -108,12 +109,52 @@ export default class EnsureCheckYourAnswersPage extends Task {
           browseTheWeb,
           exemptionData.siteDetails
         )
-        await this._validateCoordinates(browseTheWeb, exemptionData.siteDetails)
-        await this._validateCircularSiteWidth(
+        await this.verifyCoordinateDisplayBySiteType(
           browseTheWeb,
           exemptionData.siteDetails
         )
       }
+    }
+  }
+
+  async verifyCoordinateDisplayBySiteType(browseTheWeb, siteDetails) {
+    if (siteDetails.siteType === 'circle') {
+      await this.verifyCircleSiteDisplay(browseTheWeb, siteDetails)
+      return
+    }
+
+    if (siteDetails.siteType === 'triangle') {
+      await this.verifyTriangleSiteDisplay(browseTheWeb, siteDetails)
+      return
+    }
+
+    expect.fail(`Unexpected site type: ${siteDetails.siteType}`)
+  }
+
+  async verifyCircleSiteDisplay(browseTheWeb, siteDetails) {
+    await this._validateCoordinates(browseTheWeb, siteDetails)
+    await this._validateCircularSiteWidth(browseTheWeb, siteDetails)
+  }
+
+  async verifyTriangleSiteDisplay(browseTheWeb, siteDetails) {
+    const coordinates = this.getCoordinatesFromSiteDetails(siteDetails)
+
+    await browseTheWeb.isDisplayed(ReviewSiteDetailsPage.startAndEndPointsValue)
+    await this.verifyStartAndEndPointsContent(browseTheWeb, coordinates)
+
+    for (let i = 1; i < coordinates.length; i++) {
+      const pointNumber = i + 1
+      const coordinate = coordinates[i]
+
+      await browseTheWeb.isDisplayed(
+        ReviewSiteDetailsPage.getPolygonPointValue(pointNumber)
+      )
+
+      await this.verifyCoordinatePointContent(
+        browseTheWeb,
+        pointNumber,
+        coordinate
+      )
     }
   }
 
@@ -122,6 +163,9 @@ export default class EnsureCheckYourAnswersPage extends Task {
 
     if (this._isFileUpload(siteDetails)) {
       expectedText = 'Upload a file with the coordinates of the site'
+    } else if (siteDetails.siteType === 'triangle') {
+      expectedText =
+        'Manually enter multiple sets of coordinates to mark the boundary of the site'
     } else {
       expectedText =
         'Manually enter one set of coordinates and a width to create a circular site'
@@ -215,9 +259,6 @@ export default class EnsureCheckYourAnswersPage extends Task {
 
   async _validatePublicRegister(browseTheWeb, exemptionData) {
     if (exemptionData.publicRegister) {
-      // Field shows "Information withheld from public register"
-      // consent: true = give consent to share = NOT withheld = "No"
-      // consent: false = withhold consent = IS withheld = "Yes"
       const expectedConsent = exemptionData.publicRegister.consent
         ? 'No'
         : 'Yes'
@@ -264,5 +305,48 @@ export default class EnsureCheckYourAnswersPage extends Task {
 
   _extractFilenameFromPath(filePath) {
     return filePath.split('/').pop()
+  }
+
+  getCoordinatesFromSiteDetails(siteDetails) {
+    const allCoordinates =
+      siteDetails?.polygonData?.coordinates || siteDetails?.coordinates || []
+    return this._limitTriangleCoordinates(siteDetails, allCoordinates)
+  }
+
+  _limitTriangleCoordinates(siteDetails, coordinates) {
+    if (siteDetails?.siteType === 'triangle' && coordinates.length > 3) {
+      return coordinates.slice(0, 3)
+    }
+    return coordinates
+  }
+
+  async verifyStartAndEndPointsContent(browseTheWeb, coordinates) {
+    if (coordinates.length === 0) return
+
+    const startPoint = coordinates[0]
+    const expectedStartText = this.formatCoordinateForDisplay(startPoint)
+
+    await browseTheWeb.expectElementToContainText(
+      ReviewSiteDetailsPage.startAndEndPointsValue,
+      expectedStartText
+    )
+  }
+
+  async verifyCoordinatePointContent(browseTheWeb, pointNumber, coordinate) {
+    const expectedText = this.formatCoordinateForDisplay(coordinate)
+
+    await browseTheWeb.expectElementToContainText(
+      ReviewSiteDetailsPage.getPolygonPointValue(pointNumber),
+      expectedText
+    )
+  }
+
+  formatCoordinateForDisplay(coordinate) {
+    if (coordinate.latitude && coordinate.longitude) {
+      return `${coordinate.latitude}, ${coordinate.longitude}`
+    } else if (coordinate.eastings && coordinate.northings) {
+      return `${coordinate.eastings}, ${coordinate.northings}`
+    }
+    throw new Error(`Invalid coordinate format: ${JSON.stringify(coordinate)}`)
   }
 }
