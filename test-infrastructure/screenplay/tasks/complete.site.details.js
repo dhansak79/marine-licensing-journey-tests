@@ -88,7 +88,6 @@ export default class CompleteSiteDetails extends Task {
         UploadFileAndContinue.withPath(this.siteDetails.filePath)
       )
 
-      // After file upload, we land on "Review site details" page and need to continue
       if (this.saveAndContinue) {
         await this.actor.attemptsTo(ClickSaveAndContinue.now())
         this.actor.updates(Memory.markTaskCompleted('siteDetails'))
@@ -152,9 +151,19 @@ export default class CompleteSiteDetails extends Task {
       this.browseTheWeb,
       this.siteDetails.coordinatesEntryMethod
     )
-    await DoYouNeedToTellUsAboutMoreThanOneSitePageInteractions.selectNoAndContinue(
-      this.browseTheWeb
-    )
+
+    if (this.siteDetails.multipleSitesEnabled === 'yes') {
+      await DoYouNeedToTellUsAboutMoreThanOneSitePageInteractions.selectMoreThanOneSiteAndContinue(
+        this.browseTheWeb,
+        'yes'
+      )
+      await this.handleSiteNameFlow()
+    } else {
+      await DoYouNeedToTellUsAboutMoreThanOneSitePageInteractions.selectNoAndContinue(
+        this.browseTheWeb
+      )
+    }
+
     await HowDoYouWantToEnterTheCoordinatesPageInteractions.selectSiteTypeAndContinue(
       this.browseTheWeb,
       this.siteDetails.siteType
@@ -163,6 +172,12 @@ export default class CompleteSiteDetails extends Task {
       this.browseTheWeb,
       this.siteDetails.coordinateSystem
     )
+  }
+
+  async handleSiteNameFlow() {
+    const siteName = this.siteDetails.sites[0].siteName
+    await this.browseTheWeb.setValue('#siteName', siteName)
+    await this.browseTheWeb.click('button[type="submit"]')
   }
 
   async enterWidthOfCircleIfOnWidthPage() {

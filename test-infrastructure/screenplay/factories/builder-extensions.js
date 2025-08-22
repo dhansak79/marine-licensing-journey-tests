@@ -58,6 +58,10 @@ export const siteDetailsExtension = {
     )
     return builder
   },
+  forMultipleSites: (builder) => {
+    builder.setProperty('siteDetails', SiteDetailsFactory.createMultipleSites())
+    return builder
+  },
   forARandomPolygonWithWGS84Coordinates: (builder) => {
     builder.setProperty(
       'siteDetails',

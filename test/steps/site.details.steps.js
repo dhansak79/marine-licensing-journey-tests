@@ -53,6 +53,14 @@ Given(
   }
 )
 
+Given('a user is providing site details for multiple sites', function () {
+  this.actor = new Actor('Alice')
+  this.actor.can(BrowseTheWeb.using(browser))
+  this.actor.intendsTo(
+    ApplyForExemption.withValidProjectName().andSiteDetails.forMultipleSites()
+  )
+})
+
 Given(
   'an exemption for a circular site using WGS84 coordinates with latitude {string}, longitude {string} and width {string} metres',
   function (latitude, longitude, circleWidth) {

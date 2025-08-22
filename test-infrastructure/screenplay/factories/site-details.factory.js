@@ -100,12 +100,13 @@ export default class SiteDetailsFactory {
       coordinateCount,
       coordinateSystem
     )
-    return this._createSiteDetails('triangle', coordinateSystem, {
+    const siteDetails = this._createSiteDetails('triangle', coordinateSystem, {
       polygonData: this._createCoordinateSet(
         randomCoordinates,
         coordinateSystem
       )
     })
+    return this._wrapInSitesArray(siteDetails)
   }
 
   static create(shape, coordinateSystem) {
@@ -115,33 +116,82 @@ export default class SiteDetailsFactory {
     if (!data) return this._createSiteDetails(siteType, coordinateSystem)
 
     if (shape === 'circle') {
-      return this._createSiteDetails(siteType, coordinateSystem, {
+      const siteDetails = this._createSiteDetails(siteType, coordinateSystem, {
         circleData: data
       })
+      return this._wrapInSitesArray(siteDetails)
     }
 
-    return this._createSiteDetails(siteType, coordinateSystem, {
+    const siteDetails = this._createSiteDetails(siteType, coordinateSystem, {
       polygonData: this._createCoordinateSet(data, coordinateSystem)
     })
+    return this._wrapInSitesArray(siteDetails)
   }
 
   static createFileUpload() {
     return { coordinatesEntryMethod: 'file-upload' }
   }
 
-  static createKMLUpload() {
+  static createMultipleSites() {
     return {
+      multipleSitesEnabled: 'yes',
+      coordinatesEntryMethod: 'enter-manually',
+      siteType: 'circle',
+      coordinateSystem: 'WGS84',
+      circleData: this.defaultData.circle.WGS84,
+      sites: [
+        {
+          siteName: 'Main Research Site',
+          siteNumber: 1,
+          ...this._createSiteDetails('circle', 'WGS84', {
+            circleData: this.defaultData.circle.WGS84
+          })
+        },
+        {
+          siteName: 'Marine Research Site Beta',
+          siteNumber: 2,
+          ...this._createSiteDetails('circle', 'WGS84', {
+            circleData: {
+              latitude: 51.51,
+              longitude: -0.13,
+              width: 25,
+              easting: null,
+              northing: null
+            }
+          })
+        }
+      ]
+    }
+  }
+
+  static createKMLUpload() {
+    const siteDetails = {
       coordinatesEntryMethod: 'file-upload',
       fileType: 'KML',
       filePath: 'test/resources/EXE_2025_00009-LOCATIONS.kml'
     }
+    return this._wrapInSitesArray(siteDetails)
   }
 
   static createShapefileUpload() {
-    return {
+    const siteDetails = {
       coordinatesEntryMethod: 'file-upload',
       fileType: 'Shapefile',
       filePath: 'test/resources/valid-shapefile.zip'
+    }
+    return this._wrapInSitesArray(siteDetails)
+  }
+
+  static _wrapInSitesArray(siteDetails, siteName = 'Main Research Site') {
+    return {
+      ...siteDetails,
+      sites: [
+        {
+          siteName,
+          siteNumber: 1,
+          ...siteDetails
+        }
+      ]
     }
   }
 
