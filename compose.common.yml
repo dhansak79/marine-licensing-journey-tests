@@ -146,8 +146,8 @@ services:
       PORT: 3001
       NODE_ENV: development
       LOCALSTACK_ENDPOINT: http://localstack:4566
-      MONGO_URI: mongodb://mongodb:27017/
-      DEFRA_ID_ENABLED: true
+      MONGO_URI: mongodb://mongodb:27017/marine-licensing
+      DEFRA_ID_ENABLED: false
     networks:
       - cdp-tenant
     volumes:
