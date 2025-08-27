@@ -130,31 +130,24 @@ services:
 
   marine-licensing-backend:
     image: defradigital/marine-licensing-backend:${MARINE_LICENSING_BACKEND_VERSION:-latest}
-    ports:
-      - '3001:3001'
-    links:
-      - 'localstack:localstack'
-      - 'mongodb:mongodb'
-    depends_on:
-      localstack:
-        condition: service_healthy
-      mongodb:
-        condition: service_started
     env_file:
       - ./docker/config/defaults.env
     environment:
-      PORT: 3001
-      NODE_ENV: development
-      LOCALSTACK_ENDPOINT: http://localstack:4566
-      MONGO_URI: mongodb://mongodb:27017/marine-licensing
-      DEFRA_ID_ENABLED: false
-    networks:
-      - cdp-tenant
-    volumes:
-      - ./src:/home/node/src
-      - ./package.json:/home/node/package.json
-    extra_hosts:
-      - 'localhost:host-gateway'
+      - PORT=3001
+      - MONGODB_URI=mongodb://mongodb:27017/marine-licensing
+      - DEFRA_ID_ENABLED=false
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - 3001:3001
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3001/health']
+      interval: 10s
+      start_period: 30s
+      retries: 5
 
 networks:
   cdp-tenant:
