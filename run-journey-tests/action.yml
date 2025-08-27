@@ -27,7 +27,7 @@ runs:
       run: |
         MARINE_LICENSING_FRONTEND=${{inputs.marine-licensing-frontend}} \
         MARINE_LICENSING_BACKEND=${{inputs.marine-licensing-backend}} \
-        docker compose -f compose.common.yml up--wait-timeout 300 -d --quiet-pull
+        docker compose -f compose.common.yml up --wait-timeout 300 -d --quiet-pull
     - name: Run the tests
       shell: bash
       run: |
