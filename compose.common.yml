@@ -82,22 +82,23 @@ services:
       - cdp-tenant
 
   redis:
-    image: redis:7.2.3-alpine3.18
-    ports:
-      - '6379:6379'
+    image: redis:7
     restart: always
-    networks:
-      - cdp-tenant
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'PING']
+      interval: 5s
+      start_period: 2s
+      retries: 5
 
   mongodb:
-    image: mongo:6.0.13
-    networks:
-      - cdp-tenant
-    ports:
-      - '27017:27017'
+    image: mongo:6
     volumes:
-      - mongodb-data:/data
-    restart: always
+      - ./docker/scripts/mongodb:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', 'db.hello().ok']
+      interval: 5s
+      start_period: 5s
+      retries: 3
 
   cdp-uploader:
     image: defradigital/cdp-uploader:${CDP_UPLOADER_VERSION:-latest}
