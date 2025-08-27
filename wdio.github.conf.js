@@ -4,14 +4,6 @@ import {
   logUserCleanup
 } from './test-infrastructure/capture/index.js'
 
-const chromeProxyConfig = {
-  proxy: {
-    proxyType: 'manual',
-    httpProxy: 'localhost:3128',
-    sslProxy: 'localhost:3128'
-  }
-}
-
 const getTags = () => {
   if (process.env.ENVIRONMENT === 'test') {
     return '@real-defra-id or @d365'
@@ -45,26 +37,23 @@ export const config = {
 
   capabilities: [
     {
-      ...chromeProxyConfig,
-      ...{
-        browserName: 'chrome',
-        'goog:chromeOptions': {
-          args: [
-            '--no-sandbox',
-            '--disable-infobars',
-            '--headless',
-            '--disable-gpu',
-            '--window-size=1920,1080',
-            '--enable-features=NetworkService,NetworkServiceInProcess',
-            '--password-store=basic',
-            '--use-mock-keychain',
-            '--dns-prefetch-disable',
-            '--disable-background-networking',
-            '--disable-remote-fonts',
-            '--ignore-certificate-errors',
-            '--disable-dev-shm-usage'
-          ]
-        }
+      browserName: 'chrome',
+      'goog:chromeOptions': {
+        args: [
+          '--no-sandbox',
+          '--disable-infobars',
+          '--headless',
+          '--disable-gpu',
+          '--window-size=1920,1080',
+          '--enable-features=NetworkService,NetworkServiceInProcess',
+          '--password-store=basic',
+          '--use-mock-keychain',
+          '--dns-prefetch-disable',
+          '--disable-background-networking',
+          '--disable-remote-fonts',
+          '--ignore-certificate-errors',
+          '--disable-dev-shm-usage'
+        ]
       }
     }
   ],
