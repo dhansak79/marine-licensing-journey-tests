@@ -50,11 +50,6 @@ runs:
         timeout 120 bash -c 'until curl -f http://localhost:3200/health; do sleep 5; done'
         echo "Waiting for frontend to be ready..."
         timeout 180 bash -c 'until curl -f http://localhost:3000/health; do sleep 5; done'
-        echo "Frontend health check passed, testing actual application..."
-        echo "Waiting additional time for application to fully initialize..."
-        sleep 10
-        echo "Testing frontend application endpoint..."
-        curl -v http://localhost:3000/exemption/project-name || echo "Frontend application not responding"
         echo "All services are ready!"
 
     - name: Check service status
@@ -68,13 +63,6 @@ runs:
         docker network ls
         echo "=== Port Status ==="
         netstat -tlnp | grep -E ':(3000|3001|3200|4444)' || echo "No services listening on expected ports"
-        echo "=== Frontend Application Test ==="
-        echo "Testing frontend health endpoint..."
-        curl -v http://localhost:3000/health || echo "Health endpoint not responding"
-        echo "Testing frontend application endpoint..."
-        curl -v http://localhost:3000/exemption/project-name || echo "Application endpoint not responding"
-        echo "Testing frontend root endpoint..."
-        curl -v http://localhost:3000/ || echo "Root endpoint not responding"
 
     - name: Run the tests
       shell: bash

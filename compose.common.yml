@@ -18,6 +18,8 @@ services:
       - 4444:4444
     networks:
       - cdp-tenant
+    extra_hosts:
+      - 'localhost:host-gateway'
 
   defra-id-stub:
     image: defradigital/cdp-defra-id-stub:latest
@@ -61,10 +63,8 @@ services:
       REDIS_PORT: 6380
     volumes:
       - ./user-stub.json:/user-stub.json
-    command: 'sh -c "echo \"Starting frontend service...\" && echo \"Attempting user registration...\" && curl -X POST -H \"Content-Type: application/json\" -d @/user-stub.json \"http://defra-id-stub:3200/cdp-defra-id-stub/API/register\" && echo \"User registration completed\" && echo \"Starting Node.js application...\" && node ."'
+    command: 'sh -c "echo \"Starting frontend service...\" && if [ \"$DEFRA_ID_ENABLED\" = \"true\" ]; then echo \"Attempting user registration...\" && curl -X POST -H \"Content-Type: application/json\" -d @/user-stub.json \"http://defra-id-stub:3200/cdp-defra-id-stub/API/register\" && echo \"User registration completed\"; else echo \"Defra ID disabled, skipping user registration\"; fi && echo \"Starting Node.js application...\" && node ."'
     depends_on:
-      defra-id-stub:
-        condition: service_healthy
       marine-licensing-backend:
         condition: service_healthy
       redis-frontend:
