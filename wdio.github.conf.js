@@ -16,7 +16,7 @@ export const config = {
   baseUrl: `http://localhost:3000/`,
   defraIdUrl: `http://localhost:3200`,
   hostname: process.env.CHROMEDRIVER_URL || '127.0.0.1',
-  port: process.env.CHROMEDRIVER_PORT ? parseInt(process.env.CHROMEDRIVER_PORT) : 4444,
+  port: process.env.CHROMEDRIVER_PORT || 4444,
 
   specs: ['test/features/*.feature'],
   cucumberOpts: {
