@@ -153,7 +153,6 @@ services:
 
 networks:
   cdp-tenant:
-    external: true
     driver: bridge
 volumes:
   mongodb-data:
