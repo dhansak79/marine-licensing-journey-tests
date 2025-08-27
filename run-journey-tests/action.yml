@@ -59,9 +59,9 @@ runs:
         docker compose -f compose.common.yml ps
         echo "=== Testing Frontend Connectivity ==="
         echo "Testing from runner to frontend..."
-        curl -v --connect-timeout 5 http://localhost:3000/ || echo "Cannot reach frontend from runner"
+        curl --fail --silent --connect-timeout 5 http://localhost:3000/health || (echo "❌ Cannot reach frontend from runner!" && exit 1)
         echo "Testing from selenium container to frontend..."
-        docker compose -f compose.common.yml exec -T selenium-chrome curl -v --connect-timeout 5 http://localhost:3000/ || echo "Cannot reach frontend from selenium"
+        docker compose -f compose.common.yml exec -T selenium-chrome curl --fail --silent --connect-timeout 5 http://marine-licensing-frontend:3000/health || (echo "❌ Cannot reach frontend from selenium container!" && exit 1)
 
     - name: Run the tests
       shell: bash
