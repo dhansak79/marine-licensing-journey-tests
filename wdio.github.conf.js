@@ -22,7 +22,8 @@ export const config = {
   cucumberOpts: {
     require: ['test/steps/*.js'],
     tags: getTags(),
-    timeout: 120000
+    timeout: 120000,
+    backtrace: false
   },
 
   // ============================================================================
@@ -60,7 +61,7 @@ export const config = {
 
   execArgv: ['--loader', 'esm-module-alias/loader'],
 
-  logLevel: 'info',
+  logLevel: 'warn',
 
   // Number of failures before the test suite bails.
   bail: 0,
@@ -74,8 +75,8 @@ export const config = {
     [
       'spec',
       {
-        addConsoleLogs: true,
-        realtimeReporting: true,
+        addConsoleLogs: false,
+        realtimeReporting: false,
         color: false
       }
     ],
@@ -84,7 +85,7 @@ export const config = {
       {
         outputDir: 'allure-results',
         issueLinkTemplate: 'https://eaflood.atlassian.net/browse/{}',
-        disableWebdriverStepsReporting: false,
+        disableWebdriverStepsReporting: true,
         useCucumberStepReporter: true
       }
     ]
