@@ -59,11 +59,11 @@ runs:
     - name: Run the tests
       shell: bash
       env:
-          CHROMEDRIVER_URL: localhost
-          CHROMEDRIVER_PORT: 4444
-          # Use local infrastructure endpoints
-          LOCALSTACK_URL: http://localhost:4566
-          DEFRA_ID_URL: http://localhost:3200
+        CHROMEDRIVER_URL: localhost
+        CHROMEDRIVER_PORT: 4444
+        # Use local infrastructure endpoints
+        LOCALSTACK_URL: http://localhost:4566
+        DEFRA_ID_URL: http://localhost:3200
       run: |
         npm run test:github
 
@@ -81,11 +81,11 @@ runs:
         npm run report
 
     - name: Upload Allure report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report
-          path: ./allure-report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: allure-report
+        path: ./allure-report
 
     - name: Upload docker compose logs
       if: always()
