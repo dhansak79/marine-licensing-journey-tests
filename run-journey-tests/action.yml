@@ -44,7 +44,20 @@ runs:
         timeout 180 bash -c 'until curl -f http://localhost:3000/health; do sleep 5; done'
         echo "All services are ready!"
 
+    - name: Check service status
+      shell: bash
+      run: |
+        echo "=== Docker Compose Status ==="
+        docker compose ps
+        echo "=== Service Logs ==="
+        docker compose logs --tail=50 marine-licensing-frontend
+        echo "=== Network Status ==="
+        docker network ls
+        echo "=== Port Status ==="
+        netstat -tlnp | grep -E ':(3000|3001|3200|4444)' || echo "No services listening on expected ports"
+
     - name: Run the tests
+      shell: bash
       env:
           CHROMEDRIVER_URL: localhost
           CHROMEDRIVER_PORT: 4444
@@ -63,6 +76,7 @@ runs:
 
     - name: Generate Allure report
       if: always()
+      shell: bash
       run: |
         npm run report
 
