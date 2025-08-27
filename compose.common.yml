@@ -31,7 +31,7 @@ services:
           - localhost
 
   marine-licensing-frontend:
-    build: ./
+    image: defradigital/marine-licensing-frontend:${MARINE_LICENSING_FRONTEND_VERSION:-latest}
     ports:
       - '3000:3000'
     env_file:
@@ -124,7 +124,7 @@ services:
       - cdp-tenant
 
   marine-licensing-backend:
-    build: ./
+    image: defradigital/marine-licensing-backend:${MARINE_LICENSING_BACKEND_VERSION:-latest}
     ports:
       - '3001:3001'
     links:
