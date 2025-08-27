@@ -1,10 +1,10 @@
 name: Run Journey Tests on GitHub
 
 inputs:
-  example-node-backend:
+  marine-licensing-backend:
     required: false
     type: string
-  example-node-frontend:
+  marine-licensing-frontend:
     required: false
     type: string
 
@@ -13,7 +13,7 @@ runs:
   steps:
     - uses: actions/checkout@v4
       with:
-        repository: DEFRA/cdp-node-journey-test-suite-template
+        repository: DEFRA/marine-licensing-journey-tests
 
     - name: Docker Login
       uses: DEFRA/cdp-build-action/docker-login@main
@@ -28,9 +28,9 @@ runs:
     - name: Start docker compose
       shell: bash
       run: |
-        CDP_EXAMPLE_NODE_FRONTEND=${{inputs.example-node-frontend}} \
-        CDP_EXAMPLE_NODE_BACKEND=${{inputs.example-node-backend}} \
-        docker compose up --wait-timeout 300 -d --quiet-pull
+        MARINE_LICENSING_FRONTEND=${{inputs.marine-licensing-frontend}} \
+        MARINE_LICENSING_BACKEND=${{inputs.marine-licensing-backend}} \
+        docker compose up -f compose.common.yml --wait-timeout 300 -d --quiet-pull
     - name: Run the tests
       shell: bash
       run: |
