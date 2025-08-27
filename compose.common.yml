@@ -18,6 +18,7 @@ services:
     image: defradigital/cdp-defra-id-stub:latest
     ports:
       - '3200:3200'
+    restart: unless-stopped
     environment:
       PORT: 3200
       REDIS_HOST: redis-frontend
@@ -41,6 +42,7 @@ services:
     image: defradigital/marine-licensing-frontend:${MARINE_LICENSING_FRONTEND_VERSION:-latest}
     ports:
       - '3000:3000'
+    restart: unless-stopped
     env_file:
       - 'compose/aws.env'
     environment:
@@ -55,16 +57,24 @@ services:
     depends_on:
       defra-id-stub:
         condition: service_healthy
+      marine-licensing-backend:
+        condition: service_healthy
     networks:
       - cdp-tenant
     extra_hosts:
       - 'localhost:host-gateway'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 10s
+      start_period: 30s
+      retries: 5
 
   localstack:
     image: localstack/localstack:3.0.2
     ports:
       - '4566:4566' # LocalStack Gateway
       - '4510-4559:4510-4559' # external services port range
+    restart: unless-stopped
     env_file:
       - 'compose/aws.env'
     environment:
@@ -86,6 +96,8 @@ services:
   redis:
     image: redis:7
     restart: always
+    networks:
+      - cdp-tenant
     healthcheck:
       test: ['CMD', 'redis-cli', 'PING']
       interval: 5s
@@ -96,6 +108,8 @@ services:
     image: mongo:6
     volumes:
       - ./docker/scripts/mongodb:/docker-entrypoint-initdb.d
+    networks:
+      - cdp-tenant
     healthcheck:
       test: ['CMD', 'mongosh', '--eval', 'db.hello().ok']
       interval: 5s
@@ -106,6 +120,7 @@ services:
     image: defradigital/cdp-uploader:${CDP_UPLOADER_VERSION:-latest}
     ports:
       - '7337:7337'
+    restart: unless-stopped
     links:
       - 'localstack:localstack'
       - 'redis:redis'
@@ -133,6 +148,7 @@ services:
 
   marine-licensing-backend:
     image: defradigital/marine-licensing-backend:${MARINE_LICENSING_BACKEND_VERSION:-latest}
+    restart: unless-stopped
     env_file:
       - ./docker/config/defaults.env
     environment:
@@ -146,6 +162,8 @@ services:
         condition: service_healthy
     ports:
       - 3001:3001
+    networks:
+      - cdp-tenant
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:3001/health']
       interval: 10s
