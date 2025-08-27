@@ -6,6 +6,11 @@ services:
     restart: always
     networks:
       cdp-tenant:
+  
+    selenium-chrome:
+    image: selenium/standalone-chrome:123.0
+    ports:
+      - 4444:4444
 
   defra-id-stub:
     image: defradigital/cdp-defra-id-stub:latest
