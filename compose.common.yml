@@ -6,6 +6,11 @@ services:
     restart: always
     networks:
       cdp-tenant:
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'PING']
+      interval: 5s
+      start_period: 2s
+      retries: 5
 
   selenium-chrome:
     image: selenium/standalone-chrome:123.0
@@ -27,7 +32,7 @@ services:
       NODE_ENV: development
     depends_on:
       redis-frontend:
-        condition: service_started
+        condition: service_healthy
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:3200/health']
       interval: 5s
@@ -63,7 +68,7 @@ services:
       marine-licensing-backend:
         condition: service_healthy
       redis-frontend:
-        condition: service_started
+        condition: service_healthy
     networks:
       - cdp-tenant
     extra_hosts:
