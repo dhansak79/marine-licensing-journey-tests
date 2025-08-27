@@ -56,9 +56,9 @@ runs:
       shell: bash
       run: |
         echo "=== Docker Compose Status ==="
-        docker compose ps
+        docker compose -f compose.common.yml ps
         echo "=== All Service Logs ==="
-        docker compose logs --tail=50
+        docker compose -f compose.common.yml logs --tail=50
         echo "=== Network Status ==="
         docker network ls
         echo "=== Port Status ==="
@@ -78,7 +78,7 @@ runs:
     - name: debug
       if: always()
       run: |
-        docker compose logs > logs.txt
+        docker compose -f compose.common.yml logs > logs.txt
         docker ps
       shell: bash
 
