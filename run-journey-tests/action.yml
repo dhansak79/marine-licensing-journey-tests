@@ -57,8 +57,8 @@ runs:
       run: |
         echo "=== Docker Compose Status ==="
         docker compose ps
-        echo "=== Service Logs ==="
-        docker compose logs --tail=50 marine-licensing-journey-tests-marine-licensing-frontend-1
+        echo "=== All Service Logs ==="
+        docker compose logs --tail=50
         echo "=== Network Status ==="
         docker network ls
         echo "=== Port Status ==="
