@@ -52,7 +52,7 @@ services:
       - cdp-tenant
     extra_hosts:
       - 'localhost:host-gateway'
-  
+
   localstack:
     image: localstack/localstack:3.0.2
     ports:
