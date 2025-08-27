@@ -57,12 +57,11 @@ runs:
       run: |
         echo "=== Docker Compose Status ==="
         docker compose -f compose.common.yml ps
-        echo "=== All Service Logs ==="
-        docker compose -f compose.common.yml logs --tail=50
-        echo "=== Network Status ==="
-        docker network ls
-        echo "=== Port Status ==="
-        netstat -tlnp | grep -E ':(3000|3001|3200|4444)' || echo "No services listening on expected ports"
+        echo "=== Testing Frontend Connectivity ==="
+        echo "Testing from runner to frontend..."
+        curl -v --connect-timeout 5 http://localhost:3000/ || echo "Cannot reach frontend from runner"
+        echo "Testing from selenium container to frontend..."
+        docker compose -f compose.common.yml exec -T selenium-chrome curl -v --connect-timeout 5 http://localhost:3000/ || echo "Cannot reach frontend from selenium"
 
     - name: Run the tests
       shell: bash
