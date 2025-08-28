@@ -18,6 +18,8 @@ services:
       - 4444:4444
     networks:
       - cdp-tenant
+    extra_hosts:
+      - 'localhost:host-gateway'
 
   defra-id-stub:
     image: defradigital/cdp-defra-id-stub:latest
@@ -39,9 +41,7 @@ services:
       start_period: 5s
       retries: 3
     networks:
-      cdp-tenant:
-        aliases:
-          - localhost
+      - cdp-tenant
 
   marine-licensing-frontend:
     image: defradigital/marine-licensing-frontend:${MARINE_LICENSING_FRONTEND_VERSION:-latest}
