@@ -101,7 +101,9 @@ export const takeEnhancedScreenshot = async (
           })
         }
       } else {
-        console.log(`[SCREENSHOT] ℹ️ Performance logging not available in this browser configuration`)
+        console.log(
+          `[SCREENSHOT] ℹ️ Performance logging not available in this browser configuration`
+        )
       }
     } catch (perfError) {
       // Performance logs might not be available in all browser configurations
