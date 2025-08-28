@@ -20,7 +20,7 @@ export default class Navigate extends Task {
   async performAs(actor) {
     if (process.env.ENVIRONMENT === 'test') {
       await this.authenticateWithRealDefraId(actor)
-    } else 
+    } else {
       await this.authenticateWithDefraIdStub(actor)
     }
   }
