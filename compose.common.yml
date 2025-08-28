@@ -30,6 +30,7 @@ services:
       REDIS_PORT: 6380
       USE_SINGLE_INSTANCE_CACHE: true
       NODE_ENV: development
+      APP_BASE_URL: http://defra-id-stub:3200
     depends_on:
       redis-frontend:
         condition: service_healthy
