@@ -20,6 +20,7 @@ services:
       - cdp-tenant
     extra_hosts:
       - 'localhost:host-gateway'
+      - 'host.docker.internal:host-gateway'
 
   defra-id-stub:
     image: defradigital/cdp-defra-id-stub:latest
