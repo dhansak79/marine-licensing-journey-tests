@@ -66,36 +66,42 @@ export const takeEnhancedScreenshot = async (
       )
     }
 
-    // Log network errors (performance logs)
+    // Log network errors (performance logs) - only if available
     try {
-      const performanceLogs = await browser.getLogs('performance')
-      const failedRequests = performanceLogs
-        .filter((log) => {
-          try {
-            const message = JSON.parse(log.message)
-            return (
-              message.message?.method === 'Network.responseReceived' &&
-              message.message?.params?.response?.status >= 400
-            )
-          } catch {
-            return false
-          }
-        })
-        .slice(-3) // Last 3 failed requests
+      // Check if performance logging is available by trying to get log types
+      const logTypes = await browser.getLogTypes()
+      if (logTypes.includes('performance')) {
+        const performanceLogs = await browser.getLogs('performance')
+        const failedRequests = performanceLogs
+          .filter((log) => {
+            try {
+              const message = JSON.parse(log.message)
+              return (
+                message.message?.method === 'Network.responseReceived' &&
+                message.message?.params?.response?.status >= 400
+              )
+            } catch {
+              return false
+            }
+          })
+          .slice(-3) // Last 3 failed requests
 
-      if (failedRequests.length > 0) {
-        console.log(`[SCREENSHOT] 🌐 Recent Failed Network Requests:`)
-        failedRequests.forEach((req, index) => {
-          try {
-            const message = JSON.parse(req.message)
-            const response = message.message.params.response
-            console.log(`  ${index + 1}. ${response.status} ${response.url}`)
-          } catch (parseError) {
-            console.log(
-              `  ${index + 1}. Could not parse network log: ${parseError.message}`
-            )
-          }
-        })
+        if (failedRequests.length > 0) {
+          console.log(`[SCREENSHOT] 🌐 Recent Failed Network Requests:`)
+          failedRequests.forEach((req, index) => {
+            try {
+              const message = JSON.parse(req.message)
+              const response = message.message.params.response
+              console.log(`  ${index + 1}. ${response.status} ${response.url}`)
+            } catch (parseError) {
+              console.log(
+                `  ${index + 1}. Could not parse network log: ${parseError.message}`
+              )
+            }
+          })
+        }
+      } else {
+        console.log(`[SCREENSHOT] ℹ️ Performance logging not available in this browser configuration`)
       }
     } catch (perfError) {
       // Performance logs might not be available in all browser configurations
