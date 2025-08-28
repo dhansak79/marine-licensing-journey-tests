@@ -16,7 +16,8 @@ const getTags = () => {
 export const config = {
   runner: 'local',
   baseUrl: `http://marine-licensing-frontend:3000/`,
-  defraIdUrl: `http://localhost:3200`,
+  defraIdUrl: `http://defra-id-stub:3200`,
+  defraIdUrlAPI: `http://localhost:3200`,
   hostname: process.env.CHROMEDRIVER_URL || '127.0.0.1',
   port: process.env.CHROMEDRIVER_PORT || 4444,
 
@@ -155,7 +156,7 @@ export const config = {
         const { DefraIdStubUserManager } = await import(
           './test-infrastructure/helpers/defra-id-stub-user-manager.js'
         )
-        const userManager = new DefraIdStubUserManager(config.defraIdUrl)
+        const userManager = new DefraIdStubUserManager(config.defraIdUrlAPI)
 
         for (const userId of global.testUsersCreated) {
           console.log(`[WDIO] Attempting to expire user: ${userId}`)
