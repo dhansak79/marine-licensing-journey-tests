@@ -91,8 +91,13 @@ export const config = {
     ]
   ],
   beforeScenario: async function (world, context) {
+    console.log(`[WDIO] beforeScenario: Starting scenario "${world.pickle.name}"`)
+    console.log(`[WDIO] global.testUsersCreated before reload:`, global.testUsersCreated || [])
+
     await browser.reloadSession()
     attachRichFeatureContext(world)
+
+    console.log(`[WDIO] global.testUsersCreated after reload:`, global.testUsersCreated || [])
   },
   afterStep: async function () {
     await browser.takeScreenshot()
@@ -102,28 +107,51 @@ export const config = {
       await browser.takeScreenshot()
     }
 
+    console.log(`[WDIO] afterScenario: Checking test users cleanup...`)
+    console.log(`[WDIO] ENVIRONMENT: ${process.env.ENVIRONMENT}`)
+    console.log(`[WDIO] DEFRA_ID_ENABLED: ${process.env.DEFRA_ID_ENABLED}`)
+    console.log(`[WDIO] global.testUsersCreated exists: ${!!global.testUsersCreated}`)
+    console.log(`[WDIO] global.testUsersCreated length: ${global.testUsersCreated?.length || 0}`)
+    console.log(`[WDIO] global.testUsersCreated content:`, global.testUsersCreated || [])
+
     if (process.env.ENVIRONMENT !== 'test') {
       if (global.testUsersCreated && global.testUsersCreated.length > 0) {
+        console.log(`[WDIO] Starting user cleanup for ${global.testUsersCreated.length} users...`)
+
         const { DefraIdStubUserManager } = await import(
           './test-infrastructure/helpers/defra-id-stub-user-manager.js'
         )
         const userManager = new DefraIdStubUserManager(config.defraIdUrl)
 
         for (const userId of global.testUsersCreated) {
+          console.log(`[WDIO] Attempting to expire user: ${userId}`)
           try {
             await userManager.expireTestUser(userId)
+            console.log(`[WDIO] Successfully expired user: ${userId}`)
             logUserCleanup(userId, true)
           } catch (error) {
+            console.log(`[WDIO] Failed to expire user ${userId}:`, error.message)
             logUserCleanup(userId, false, error)
           }
         }
 
+        console.log(`[WDIO] User cleanup completed, resetting global.testUsersCreated`)
         global.testUsersCreated = []
+        console.log(`[WDIO] global.testUsersCreated reset to:`, global.testUsersCreated)
+      } else {
+        console.log(`[WDIO] No users to clean up (either array doesn't exist or is empty)`)
       }
+    } else {
+      console.log(`[WDIO] Skipping user cleanup because ENVIRONMENT is 'test'`)
     }
   },
 
   onComplete: function (exitCode, config, capabilities, results) {
+    console.log(`[WDIO] onComplete: Test suite finished`)
+    console.log(`[WDIO] Exit code: ${exitCode}`)
+    console.log(`[WDIO] Final global.testUsersCreated state:`, global.testUsersCreated || [])
+    console.log(`[WDIO] Test results:`, results ? `${results.passed || 0} passed, ${results.failed || 0} failed` : 'No results')
+
     // !Do Not Remove! Required for test status to show correctly in portal.
     if (results?.failed && results.failed > 0) {
       fs.writeFileSync('FAILED', JSON.stringify(results))
