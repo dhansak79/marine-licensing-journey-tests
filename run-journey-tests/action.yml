@@ -72,7 +72,12 @@ runs:
         LOCALSTACK_URL: http://localhost:4566
         DEFRA_ID_URL: http://localhost:3200
       run: |
+        echo "=== Cleaning previous results ==="
+        rm -rf allure-results allure-report
+        echo "=== Running tests ==="
         npm run test:github
+        echo "=== Checking test results ==="
+        ls -la allure-results/ || echo "No allure-results directory found"
 
     - name: debug
       if: always()
@@ -85,14 +90,14 @@ runs:
       if: always()
       shell: bash
       run: |
-        npm run report
+        npm run report:github
 
     - name: Upload Allure report
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: allure-report
-        path: ./allure-report
+        path: ./allure-report/index.html # Single HTML file (not folder structure)
 
     - name: Upload docker compose logs
       if: always()

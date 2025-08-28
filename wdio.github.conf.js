@@ -86,7 +86,8 @@ export const config = {
         outputDir: 'allure-results',
         issueLinkTemplate: 'https://eaflood.atlassian.net/browse/{}',
         disableWebdriverStepsReporting: true,
-        useCucumberStepReporter: true
+        useCucumberStepReporter: true,
+        disableMochaArtifacts: true
       }
     ]
   ],
