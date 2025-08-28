@@ -18,10 +18,7 @@ export default class Navigate extends Task {
   }
 
   async performAs(actor) {
-    if (process.env.DEFRA_ID_ENABLED === 'false') {
-      // Defra ID is disabled, navigate directly without authentication
-      await actor.ability.navigateTo(this.url)
-    } else if (process.env.ENVIRONMENT === 'test') {
+    if (process.env.ENVIRONMENT === 'test') {
       await this.authenticateWithRealDefraId(actor)
     } else {
       await this.authenticateWithDefraIdStub(actor)
