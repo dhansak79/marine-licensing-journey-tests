@@ -72,8 +72,6 @@ services:
         condition: service_healthy
     networks:
       - cdp-tenant
-    extra_hosts:
-      - 'localhost:host-gateway'
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
       interval: 10s
