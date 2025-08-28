@@ -146,6 +146,7 @@ services:
       PORT: 7337
       NODE_ENV: development
       REDIS_HOST: redis
+      APP_BASE_URL: http://cdp-uploader:7337
       USE_SINGLE_INSTANCE_CACHE: true
       MOCK_VIRUS_SCAN_ENABLED: true
       MOCK_VIRUS_RESULT_DELAY: 3
