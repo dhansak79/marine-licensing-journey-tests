@@ -36,7 +36,9 @@ export class DefraIdStubUserManager {
   }
 
   async makeRegistrationRequest(userData) {
-    return await fetch(`${this.stubUrl}${this.apiPath}/register`, {
+    const url = `${this.stubUrl}${this.apiPath}/register`
+    console.log(`DefraIdStubUserManager: Making POST request to: ${url}`)
+    return await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData)
@@ -100,7 +102,9 @@ export class DefraIdStubUserManager {
 
   async expireTestUser(userId) {
     try {
-      await fetch(`${this.stubUrl}${this.apiPath}/register/${userId}/expire`, {
+      const url = `${this.stubUrl}${this.apiPath}/register/${userId}/expire`
+      console.log(`DefraIdStubUserManager: Making POST request to: ${url}`)
+      await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       })
