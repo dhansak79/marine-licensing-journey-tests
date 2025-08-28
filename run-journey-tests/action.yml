@@ -67,7 +67,6 @@ runs:
       shell: bash
       env:
         CHROMEDRIVER_URL: localhost
-        DEFRA_ID_ENABLED: false
         # Use local infrastructure endpoints
         LOCALSTACK_URL: http://localhost:4566
         DEFRA_ID_URL: http://localhost:3200
