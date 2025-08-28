@@ -56,8 +56,18 @@ export const config = {
           '--disable-background-networking',
           '--disable-remote-fonts',
           '--ignore-certificate-errors',
-          '--disable-dev-shm-usage'
-        ]
+          '--disable-dev-shm-usage',
+          '--enable-logging',
+          '--v=1'
+        ],
+        perfLoggingPrefs: {
+          enableNetwork: true,
+          enablePage: true
+        }
+      },
+      'goog:loggingPrefs': {
+        performance: 'ALL',
+        browser: 'ALL'
       }
     }
   ],
@@ -174,71 +184,4 @@ export const config = {
         }
 
         console.log(
-          `[WDIO] User cleanup completed, resetting global.testUsersCreated`
-        )
-        global.testUsersCreated = []
-        console.log(
-          `[WDIO] global.testUsersCreated reset to:`,
-          global.testUsersCreated
-        )
-      } else {
-        console.log(
-          `[WDIO] No users to clean up (either array doesn't exist or is empty)`
-        )
-      }
-    } else {
-      console.log(`[WDIO] Skipping user cleanup because ENVIRONMENT is 'test'`)
-    }
-  },
-
-  // Add hooks to capture navigation and command failures
-  beforeCommand: async function (commandName, args) {
-    if (commandName === 'navigateTo' || commandName === 'url') {
-      console.log(`[NAVIGATION] 🌐 Attempting to navigate to: ${args[0]}`)
-    }
-  },
-
-  afterCommand: async function (commandName, args, result, error) {
-    if (error && (commandName === 'navigateTo' || commandName === 'url')) {
-      console.log(`[NAVIGATION-ERROR] ❌ Navigation failed to: ${args[0]}`)
-      console.log(`[NAVIGATION-ERROR] 📝 Error: ${error.message}`)
-
-      // Take screenshot when navigation fails
-      await takeEnhancedScreenshot('navigation_error', error)
-    }
-  },
-
-  // Hook to capture any WebDriver errors
-  onError: async function (error, context) {
-    console.log(
-      `[WEBDRIVER-ERROR] 🚨 WebDriver Error in ${context}: ${error.message}`
-    )
-    console.log(
-      `[WEBDRIVER-ERROR] 📍 Stack: ${error.stack?.split('\n')[1] || 'No stack available'}`
-    )
-
-    // Log current page info and take screenshot on any WebDriver error
-    await logCurrentPageInfo()
-    await takeEnhancedScreenshot('webdriver_error', error)
-  },
-
-  onComplete: function (exitCode, config, capabilities, results) {
-    console.log(`[WDIO] onComplete: Test suite finished`)
-    console.log(`[WDIO] Exit code: ${exitCode}`)
-    console.log(
-      `[WDIO] Final global.testUsersCreated state:`,
-      global.testUsersCreated || []
-    )
-    console.log(
-      `[WDIO] Test results:`,
-      results
-        ? `${results.passed || 0} passed, ${results.failed || 0} failed`
-        : 'No results'
-    )
-
-    // !Do Not Remove! Required for test status to show correctly in portal.
-    if (results?.failed && results.failed > 0) {
-      fs.writeFileSync('FAILED', JSON.stringify(results))
-    }
-  }
-}
+          `
