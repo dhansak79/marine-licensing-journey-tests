@@ -39,9 +39,7 @@ services:
       start_period: 5s
       retries: 3
     networks:
-      cdp-tenant:
-        aliases:
-          - localhost
+      - cdp-tenant
 
   marine-licensing-frontend:
     image: defradigital/marine-licensing-frontend:${MARINE_LICENSING_FRONTEND_VERSION:-latest}
