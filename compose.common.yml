@@ -17,11 +17,7 @@ services:
     ports:
       - 4444:4444
     networks:
-      cdp-tenant:
-        aliases:
-          - selenium-chrome
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - cdp-tenant
 
   defra-id-stub:
     image: defradigital/cdp-defra-id-stub:latest
