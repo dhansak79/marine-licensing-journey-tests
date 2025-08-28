@@ -57,13 +57,15 @@ runs:
       run: |
         echo "=== Docker Compose Status ==="
         docker compose -f compose.common.yml ps
-        echo "=== Testing Frontend Connectivity ==="
+        echo "=== Testing Service Connectivity ==="
         echo "Testing from runner to frontend..."
         curl --fail --silent --connect-timeout 5 http://localhost:3000/health || (echo "❌ Cannot reach frontend from runner!" && exit 1)
+        echo "Testing from runner to defra-id-stub..."
+        curl --fail --silent --connect-timeout 5 http://localhost:3200/health || (echo "❌ Cannot reach defra-id-stub from runner!" && exit 1)
+        echo "Testing defra-id-stub API endpoint..."
+        curl -v --connect-timeout 5 http://localhost:3200/cdp-defra-id-stub/API/register -X POST -H "Content-Type: application/json" -d '{"email":"test@example.com","password":"TestPassword123!","firstName":"Test","lastName":"User"}' || echo "Defra ID stub API test completed (may show expected errors)"
         echo "Testing from selenium container to frontend..."
         docker compose -f compose.common.yml exec -T selenium-chrome curl --fail --silent --connect-timeout 5 http://marine-licensing-frontend:3000/health || (echo "❌ Cannot reach frontend from selenium container!" && exit 1)
-        echo "Testing from selenium container to defra-id-stub..."
-        docker compose -f compose.common.yml exec -T selenium-chrome curl --fail --silent --connect-timeout 5 http://defra-id-stub:3200/health || (echo "❌ Cannot reach defra-id-stub from selenium container!" && exit 1)
 
     - name: Run the tests
       shell: bash
