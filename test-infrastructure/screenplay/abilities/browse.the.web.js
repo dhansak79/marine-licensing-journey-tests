@@ -12,7 +12,9 @@ export default class BrowseTheWeb extends Ability {
       chaiExpect.fail(ERROR_MESSAGES.MISSING_BROWSER)
     }
     this.browser = browser
-    this.defraIdStub = new DefraIdStubUserManager(browser.options.defraIdUrl)
+    this.defraIdStub = new DefraIdStubUserManager({
+      defraIdUrl: browser.options.defraIdUrl
+    })
   }
 
   static using(browser) {

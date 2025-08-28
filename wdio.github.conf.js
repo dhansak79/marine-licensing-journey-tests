@@ -156,7 +156,7 @@ export const config = {
         const { DefraIdStubUserManager } = await import(
           './test-infrastructure/helpers/defra-id-stub-user-manager.js'
         )
-        const userManager = new DefraIdStubUserManager(config.defraIdUrlAPI)
+        const userManager = new DefraIdStubUserManager(config)
 
         for (const userId of global.testUsersCreated) {
           console.log(`[WDIO] Attempting to expire user: ${userId}`)

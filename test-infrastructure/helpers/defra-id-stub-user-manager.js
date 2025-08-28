@@ -7,8 +7,20 @@ import {
 } from '~/test-infrastructure/capture/index.js'
 
 export class DefraIdStubUserManager {
-  constructor(stubUrl) {
-    this.stubUrl = stubUrl
+  constructor(config) {
+    if (!config) {
+      throw new Error('DefraIdStubUserManager requires a config object')
+    }
+
+    // Prioritize defraIdUrlAPI, fallback to defraIdUrl for backward compatibility
+    this.defraIdUrlAPI = config.defraIdUrlAPI || config.defraIdUrl
+
+    if (!this.defraIdUrlAPI) {
+      throw new Error(
+        'DefraIdStubUserManager requires either defraIdUrlAPI or defraIdUrl in config'
+      )
+    }
+
     this.apiPath = '/cdp-defra-id-stub/API'
     faker.locale = 'en_GB'
   }
@@ -36,7 +48,7 @@ export class DefraIdStubUserManager {
   }
 
   async makeRegistrationRequest(userData) {
-    const url = `${this.stubUrl}${this.apiPath}/register`
+    const url = `${this.defraIdUrlAPI}${this.apiPath}/register`
     console.log(`DefraIdStubUserManager: Making POST request to: ${url}`)
     return await fetch(url, {
       method: 'POST',
@@ -102,7 +114,7 @@ export class DefraIdStubUserManager {
 
   async expireTestUser(userId) {
     try {
-      const url = `${this.stubUrl}${this.apiPath}/register/${userId}/expire`
+      const url = `${this.defraIdUrlAPI}${this.apiPath}/register/${userId}/expire`
       console.log(`DefraIdStubUserManager: Making POST request to: ${url}`)
       await fetch(url, {
         method: 'POST',
@@ -120,7 +132,7 @@ export class DefraIdStubUserManager {
 
   async isStubAvailable() {
     try {
-      const response = await fetch(`${this.stubUrl}/health`)
+      const response = await fetch(`${this.defraIdUrlAPI}/health`)
       return response.ok
     } catch {
       return false
