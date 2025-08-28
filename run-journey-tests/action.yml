@@ -71,7 +71,7 @@ runs:
       shell: bash
       env:
         CHROMEDRIVER_URL: localhost
-        DEFRA_ID_ENABLED: false
+        DEFRA_ID_ENABLED: true
         # Use local infrastructure endpoints
       run: |
         echo "=== Cleaning previous results ==="
