@@ -1,7 +1,9 @@
 import fs from 'node:fs'
 import {
   attachRichFeatureContext,
-  logUserCleanup
+  logUserCleanup,
+  takeEnhancedScreenshot,
+  logCurrentPageInfo
 } from './test-infrastructure/capture/index.js'
 
 const getTags = () => {
@@ -108,12 +110,26 @@ export const config = {
       global.testUsersCreated || []
     )
   },
-  afterStep: async function () {
-    await browser.takeScreenshot()
+  afterStep: async function (step, scenario, result, context) {
+    // Take enhanced screenshot after each step with URL logging
+    await takeEnhancedScreenshot('step')
   },
   afterScenario: async function (scenario, world) {
     if (scenario.result.status === 'FAILED') {
-      await browser.takeScreenshot()
+      console.log(
+        `[SCENARIO-FAILURE] 🔍 Investigating failure in scenario: "${scenario.pickle.name}"`
+      )
+
+      // Log current page information for debugging
+      await logCurrentPageInfo()
+
+      // Take enhanced screenshot with failure context
+      await takeEnhancedScreenshot(
+        'failure',
+        new Error(
+          `Scenario failed: ${scenario.result.exception?.message || 'Unknown error'}`
+        )
+      )
     }
 
     console.log(`[WDIO] afterScenario: Checking test users cleanup...`)
@@ -172,6 +188,37 @@ export const config = {
     } else {
       console.log(`[WDIO] Skipping user cleanup because ENVIRONMENT is 'test'`)
     }
+  },
+
+  // Add hooks to capture navigation and command failures
+  beforeCommand: async function (commandName, args) {
+    if (commandName === 'navigateTo' || commandName === 'url') {
+      console.log(`[NAVIGATION] 🌐 Attempting to navigate to: ${args[0]}`)
+    }
+  },
+
+  afterCommand: async function (commandName, args, result, error) {
+    if (error && (commandName === 'navigateTo' || commandName === 'url')) {
+      console.log(`[NAVIGATION-ERROR] ❌ Navigation failed to: ${args[0]}`)
+      console.log(`[NAVIGATION-ERROR] 📝 Error: ${error.message}`)
+
+      // Take screenshot when navigation fails
+      await takeEnhancedScreenshot('navigation_error', error)
+    }
+  },
+
+  // Hook to capture any WebDriver errors
+  onError: async function (error, context) {
+    console.log(
+      `[WEBDRIVER-ERROR] 🚨 WebDriver Error in ${context}: ${error.message}`
+    )
+    console.log(
+      `[WEBDRIVER-ERROR] 📍 Stack: ${error.stack?.split('\n')[1] || 'No stack available'}`
+    )
+
+    // Log current page info and take screenshot on any WebDriver error
+    await logCurrentPageInfo()
+    await takeEnhancedScreenshot('webdriver_error', error)
   },
 
   onComplete: function (exitCode, config, capabilities, results) {
