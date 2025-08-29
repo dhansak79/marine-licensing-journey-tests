@@ -95,36 +95,15 @@ export const config = {
     await browser.reloadSession()
     attachRichFeatureContext(world)
   },
+  afterStep: async function () {
+    await browser.takeScreenshot()
+  },
   afterScenario: async function (scenario, world) {
     if (scenario.result.status === 'FAILED') {
-      console.log(
-        `[SCENARIO-FAILURE] 🔍 Investigating failure in scenario: "${scenario.pickle.name}"`
-      )
-
-      // Log current page information for debugging
-      try {
-        const currentUrl = await browser.getUrl()
-        const currentTitle = await browser.getTitle()
-        logOperation('Page Info', `URL: ${currentUrl}, Title: ${currentTitle}`)
-      } catch (error) {
-        logOperation(
-          'Page Info',
-          `Failed to get page info: ${error.message}`,
-          true
-        )
-      }
+      await browser.takeScreenshot()
     }
-
-    console.log(
-      `[WDIO] Checking user cleanup (${global.testUsersCreated?.length || 0} users)`
-    )
-
     if (process.env.ENVIRONMENT !== 'test') {
       if (global.testUsersCreated && global.testUsersCreated.length > 0) {
-        console.log(
-          `[WDIO] Starting user cleanup for ${global.testUsersCreated.length} users...`
-        )
-
         const { DefraIdStubUserManager } = await import(
           './test-infrastructure/helpers/defra-id-stub-user-manager.js'
         )
@@ -135,9 +114,6 @@ export const config = {
             await userManager.expireTestUser(userId)
             logUserCleanup(userId, true)
           } catch (error) {
-            console.log(
-              `[WDIO] Failed to expire user ${userId}: ${error.message}`
-            )
             logUserCleanup(userId, false, error)
           }
         }
