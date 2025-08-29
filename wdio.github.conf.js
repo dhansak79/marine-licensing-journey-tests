@@ -1,8 +1,7 @@
 import fs from 'node:fs'
 import {
   attachRichFeatureContext,
-  logUserCleanup,
-  logOperation
+  logUserCleanup
 } from './test-infrastructure/capture/index.js'
 
 const getTags = () => {
@@ -151,19 +150,6 @@ export const config = {
     console.log(
       `[WEBDRIVER-ERROR] 📍 Stack: ${error.stack?.split('\n')[1] || 'No stack available'}`
     )
-
-    // Log current page info and take screenshot on any WebDriver error
-    try {
-      const currentUrl = await browser.getUrl()
-      const currentTitle = await browser.getTitle()
-      logOperation('Page Info', `URL: ${currentUrl}, Title: ${currentTitle}`)
-    } catch (error) {
-      logOperation(
-        'Page Info',
-        `Failed to get page info: ${error.message}`,
-        true
-      )
-    }
   },
 
   onComplete: function (exitCode, config, capabilities, results) {
