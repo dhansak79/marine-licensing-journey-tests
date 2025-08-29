@@ -1,7 +1,8 @@
 import fs from 'node:fs'
 import {
   attachRichFeatureContext,
-  logUserCleanup
+  logUserCleanup,
+  logOperation
 } from './test-infrastructure/capture/index.js'
 
 const getTags = () => {
@@ -94,10 +95,6 @@ export const config = {
     await browser.reloadSession()
     attachRichFeatureContext(world)
   },
-  afterStep: async function (step, scenario, result, context) {
-    // Take enhanced screenshot after each step with URL logging
-    await takeEnhancedScreenshot('step')
-  },
   afterScenario: async function (scenario, world) {
     if (scenario.result.status === 'FAILED') {
       console.log(
@@ -105,15 +102,13 @@ export const config = {
       )
 
       // Log current page information for debugging
-      await logCurrentPageInfo()
-
-      // Take enhanced screenshot with failure context
-      await takeEnhancedScreenshot(
-        'failure',
-        new Error(
-          `Scenario failed: ${scenario.result.exception?.message || 'Unknown error'}`
-        )
-      )
+      try {
+        const currentUrl = await browser.getUrl()
+        const currentTitle = await browser.getTitle()
+        logOperation('Page Info', `URL: ${currentUrl}, Title: ${currentTitle}`)
+      } catch (error) {
+        logOperation('Page Info', `Failed to get page info: ${error.message}`, true)
+      }
     }
 
     console.log(
@@ -178,7 +173,13 @@ export const config = {
     )
 
     // Log current page info and take screenshot on any WebDriver error
-    await logCurrentPageInfo()
+    try {
+      const currentUrl = await browser.getUrl()
+      const currentTitle = await browser.getTitle()
+      logOperation('Page Info', `URL: ${currentUrl}, Title: ${currentTitle}`)
+    } catch (error) {
+      logOperation('Page Info', `Failed to get page info: ${error.message}`, true)
+    }
   },
 
   onComplete: function (exitCode, config, capabilities, results) {
