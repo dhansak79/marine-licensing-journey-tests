@@ -14,18 +14,22 @@ runs:
     - uses: actions/checkout@v4
       with:
         repository: DEFRA/marine-licensing-journey-tests
+        path: ./marine-licensing-journey-tests
 
     - uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: 22
         cache: npm
+        cache-dependency-path: ./marine-licensing-journey-tests/package-lock.json
 
     - name: Setup the tests
       run: npm i
       shell: bash
+      working-directory: ./marine-licensing-journey-tests
 
     - name: Start docker compose
       shell: bash
+      working-directory: ./marine-licensing-journey-tests
       run: |
         MARINE_LICENSING_FRONTEND_VERSION=${{inputs.marine-licensing-frontend}} \
         MARINE_LICENSING_BACKEND_VERSION=${{inputs.marine-licensing-backend}} \
@@ -33,6 +37,7 @@ runs:
 
     - name: Check initial service status
       shell: bash
+      working-directory: ./marine-licensing-journey-tests
       run: |
         echo "=== Initial Docker Compose Status ==="
         docker compose -f compose.common.yml ps
@@ -41,6 +46,7 @@ runs:
 
     - name: Wait for services to be ready
       shell: bash
+      working-directory: ./marine-licensing-journey-tests
       run: |
         echo "Waiting for selenium-chrome to be ready..."
         timeout 120 bash -c 'until curl -f http://localhost:4444/wd/hub/status; do sleep 5; done'
@@ -54,6 +60,7 @@ runs:
 
     - name: Check service status
       shell: bash
+      working-directory: ./marine-licensing-journey-tests
       run: |
         echo "=== Docker Compose Status ==="
         docker compose -f compose.common.yml ps
@@ -69,6 +76,7 @@ runs:
 
     - name: Run the tests
       shell: bash
+      working-directory: ./marine-licensing-journey-tests
       env:
         CHROMEDRIVER_URL: localhost
         # Use local infrastructure endpoints
@@ -82,6 +90,7 @@ runs:
 
     - name: debug
       if: always()
+      working-directory: ./marine-licensing-journey-tests
       run: |
         docker compose logs > logs.txt
         docker ps
@@ -90,6 +99,7 @@ runs:
     - name: Generate Allure report
       if: always()
       shell: bash
+      working-directory: ./marine-licensing-journey-tests
       run: |
         npm run report:github
 
@@ -98,11 +108,11 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: allure-report
-        path: ./allure-report/index.html # Single HTML file (not folder structure)
+        path: ./marine-licensing-journey-tests/allure-report/index.html # Single HTML file (not folder structure)
 
     - name: Upload docker compose logs
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: docker-compose-logs
-        path: ./logs.txt
+        path: ./marine-licensing-journey-tests/logs.txt
