@@ -16,6 +16,20 @@ runs:
         repository: DEFRA/marine-licensing-journey-tests
         path: ./marine-licensing-journey-tests
 
+    - name: Debug checkout
+      run: |
+        echo "=== Debugging checkout ==="
+        echo "Current directory: $(pwd)"
+        echo "Listing root directory:"
+        ls -la
+        echo "Checking if marine-licensing-journey-tests directory exists:"
+        ls -la ./marine-licensing-journey-tests || echo "Directory not found"
+        echo "If directory exists, listing its contents:"
+        ls -la ./marine-licensing-journey-tests/ || echo "Cannot list directory contents"
+        echo "Checking for compose.common.yml specifically:"
+        find . -name "compose.common.yml" -type f || echo "compose.common.yml not found anywhere"
+      shell: bash
+
     - uses: actions/setup-node@v4
       with:
         node-version: 22
