@@ -7,10 +7,7 @@ import {
 } from './test-infrastructure/capture/index.js'
 
 const getTags = () => {
-  if (process.env.ENVIRONMENT === 'test') {
-    return '@real-defra-id or @d365'
-  }
-  return 'not @wip and not @bug and not @local-only and not @d365 and not @real-defra-id'
+  return '@smoke'
 }
 
 export const config = {

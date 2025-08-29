@@ -83,10 +83,8 @@ runs:
     - name: debug
       if: always()
       run: |
-        docker compose -f compose.common.yml logs > logs.txt
-        echo "=== Defra ID Stub Specific Logs ===" >> logs.txt
-        docker compose -f compose.common.yml logs defra-id-stub >> logs.txt 2>/dev/null || echo "No defra-id-stub logs available" >> logs.txt
-        docker ps
+         docker compose logs > logs.txt
+         docker ps
       shell: bash
 
     - name: Generate Allure report
@@ -101,15 +99,6 @@ runs:
       with:
         name: allure-report
         path: ./allure-report/index.html # Single HTML file (not folder structure)
-
-    - name: Debug Defra ID Stub
-      if: always()
-      shell: bash
-      run: |
-        echo "=== Defra ID Stub Logs (Last 50 lines) ==="
-        docker compose -f compose.common.yml logs --tail=50 defra-id-stub || echo "No defra-id-stub logs available"
-        echo "=== Defra ID Stub User Registration Activity ==="
-        docker compose -f compose.common.yml logs defra-id-stub | grep -i "user\|register\|auth" | tail -20 || echo "No user registration activity found"
 
     - name: Upload docker compose logs
       if: always()
