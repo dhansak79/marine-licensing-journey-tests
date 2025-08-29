@@ -107,7 +107,11 @@ export const config = {
         const currentTitle = await browser.getTitle()
         logOperation('Page Info', `URL: ${currentUrl}, Title: ${currentTitle}`)
       } catch (error) {
-        logOperation('Page Info', `Failed to get page info: ${error.message}`, true)
+        logOperation(
+          'Page Info',
+          `Failed to get page info: ${error.message}`,
+          true
+        )
       }
     }
 
@@ -178,7 +182,11 @@ export const config = {
       const currentTitle = await browser.getTitle()
       logOperation('Page Info', `URL: ${currentUrl}, Title: ${currentTitle}`)
     } catch (error) {
-      logOperation('Page Info', `Failed to get page info: ${error.message}`, true)
+      logOperation(
+        'Page Info',
+        `Failed to get page info: ${error.message}`,
+        true
+      )
     }
   },
 
