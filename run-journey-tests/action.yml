@@ -25,8 +25,6 @@ runs:
       with:
         repository: DEFRA/marine-licensing-journey-tests
         path: ./marine-licensing-journey-tests
-        token: ${{ secrets.GITHUB_TOKEN }}
-        ref: ${{ github.ref_name }}
 
     - name: Alternative checkout attempt
       if: failure()
