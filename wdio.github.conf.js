@@ -1,9 +1,7 @@
 import fs from 'node:fs'
 import {
   attachRichFeatureContext,
-  logUserCleanup,
-  takeEnhancedScreenshot,
-  logCurrentPageInfo
+  logUserCleanup
 } from './test-infrastructure/capture/index.js'
 
 const getTags = () => {
@@ -167,9 +165,6 @@ export const config = {
     if (error && (commandName === 'navigateTo' || commandName === 'url')) {
       console.log(`[NAVIGATION-ERROR] ❌ Navigation failed to: ${args[0]}`)
       console.log(`[NAVIGATION-ERROR] 📝 Error: ${error.message}`)
-
-      // Take screenshot when navigation fails
-      await takeEnhancedScreenshot('navigation_error', error)
     }
   },
 
@@ -184,7 +179,6 @@ export const config = {
 
     // Log current page info and take screenshot on any WebDriver error
     await logCurrentPageInfo()
-    await takeEnhancedScreenshot('webdriver_error', error)
   },
 
   onComplete: function (exitCode, config, capabilities, results) {
