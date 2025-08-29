@@ -83,8 +83,8 @@ runs:
     - name: debug
       if: always()
       run: |
-         docker compose logs > logs.txt
-         docker ps
+        docker compose logs > logs.txt
+        docker ps
       shell: bash
 
     - name: Generate Allure report
