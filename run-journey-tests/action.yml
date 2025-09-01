@@ -7,6 +7,10 @@ inputs:
   marine-licensing-frontend:
     required: false
     type: string
+  branch:
+    required: false
+    type: string
+    default: main
 
 runs:
   using: 'composite'
@@ -16,11 +20,13 @@ runs:
         repository: DEFRA/marine-licensing-journey-tests
         path: ./marine-licensing-journey-tests
 
-    # - name: Alternative checkout attempt
-    #   run: |
-    #     rm -rf ./marine-licensing-journey-tests
-    #     git clone -b ML-631 https://github.com/DEFRA/marine-licensing-journey-tests.git ./marine-licensing-journey-tests
-    #   shell: bash
+    - name: Alternative checkout attempt
+      run: |
+        rm -rf ./marine-licensing-journey-tests
+        git clone https://github.com/DEFRA/marine-licensing-journey-tests.git ./marine-licensing-journey-tests
+        cd ./marine-licensing-journey-tests
+        git checkout ${{ inputs.branch }} || echo "Using default branch"
+      shell: bash
 
     - uses: actions/setup-node@v4
       with:
