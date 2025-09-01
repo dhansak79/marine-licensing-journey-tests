@@ -20,7 +20,8 @@ runs:
         repository: DEFRA/marine-licensing-journey-tests
         path: ./marine-licensing-journey-tests
 
-    - name: Alternative checkout attempt
+    - name: Alternative checkout attempt (only if called from different repo)
+      if: github.repository != 'DEFRA/marine-licensing-journey-tests'
       run: |
         rm -rf ./marine-licensing-journey-tests
         git clone https://github.com/DEFRA/marine-licensing-journey-tests.git ./marine-licensing-journey-tests
