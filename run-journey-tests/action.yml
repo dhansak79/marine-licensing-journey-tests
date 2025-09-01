@@ -43,12 +43,6 @@ runs:
       shell: bash
       working-directory: ./marine-licensing-journey-tests
       run: |
-        echo "Current working directory: $(pwd)"
-        echo "Listing files in current directory:"
-        ls -la
-        echo "Checking if compose.common.yml exists:"
-        ls -la compose.common.yml || echo "compose.common.yml not found"
-        echo "Starting docker compose..."
         MARINE_LICENSING_FRONTEND_VERSION=${{inputs.marine-licensing-frontend}} \
         MARINE_LICENSING_BACKEND_VERSION=${{inputs.marine-licensing-backend}} \
         docker compose -f $(pwd)/compose.common.yml up --wait-timeout 300 -d --quiet-pull
@@ -57,7 +51,6 @@ runs:
       shell: bash
       working-directory: ./marine-licensing-journey-tests
       run: |
-        echo "Current working directory: $(pwd)"
         echo "=== Initial Docker Compose Status ==="
         docker compose -f $(pwd)/compose.common.yml ps
         echo "=== Service Logs (first 20 lines) ==="
