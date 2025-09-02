@@ -94,9 +94,7 @@ export const config = {
     await browser.reloadSession()
     attachRichFeatureContext(world)
   },
-  afterStep: async function () {
-    await browser.takeScreenshot()
-  },
+
   afterScenario: async function (scenario, world) {
     if (scenario.result.status === 'FAILED') {
       await browser.takeScreenshot()
