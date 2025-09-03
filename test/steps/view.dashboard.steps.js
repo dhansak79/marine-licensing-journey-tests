@@ -6,19 +6,20 @@ import {
   BrowseTheWeb,
   ClickContinueLink,
   ClickProjectsHome,
+  ClickViewDetailsLink,
   DeleteDraftNotification,
-  EnsureViewDetailsPage,
   EnsureDashboardDisplaysNotification,
   EnsureDashboardSortOrder,
   EnsureEmptyStateMessage,
   EnsureNotificationRemoved,
   EnsurePageHeading,
+  EnsureThatProjectNameIsEmpty,
+  EnsureViewDetailsPage,
   Navigate,
   NavigateToDashboard,
   SignIn,
   SignOut,
-  SubmitAnExemptionNotification,
-  ClickViewDetailsLink
+  SubmitAnExemptionNotification
 } from '~/test-infrastructure/screenplay'
 import CompleteProjectName from '~/test-infrastructure/screenplay/tasks/complete.project.name'
 
@@ -118,6 +119,16 @@ When(
     )
   }
 )
+
+When('the user starts a new notification', async function () {
+  this.actor.intendsTo(ApplyForExemption.withValidProjectName())
+  await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
+  await this.actor.attemptsTo(SignIn.now())
+})
+
+Then('the project name is not pre-populated', async function () {
+  await this.actor.attemptsTo(EnsureThatProjectNameIsEmpty.now())
+})
 
 Then('the notification is removed from the dashboard', async function () {
   await this.actor.attemptsTo(
