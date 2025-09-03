@@ -7,15 +7,18 @@ import {
   ClickContinueLink,
   ClickProjectsHome,
   DeleteDraftNotification,
+  EnsureViewDetailsPage,
   EnsureDashboardDisplaysNotification,
   EnsureDashboardSortOrder,
   EnsureEmptyStateMessage,
   EnsureNotificationRemoved,
+  EnsurePageHeading,
   Navigate,
   NavigateToDashboard,
   SignIn,
   SignOut,
-  SubmitAnExemptionNotification
+  SubmitAnExemptionNotification,
+  ClickViewDetailsLink
 } from '~/test-infrastructure/screenplay'
 import CompleteProjectName from '~/test-infrastructure/screenplay/tasks/complete.project.name'
 
@@ -64,9 +67,16 @@ Given('the user has a draft exemption notification', async function () {
   await this.actor.attemptsTo(SignOut.now())
 })
 
-When('the user clicks on Projects home in the header', async function () {
-  await this.actor.attemptsTo(ClickProjectsHome.now())
-})
+When(
+  'the user clicks view details for the submitted notification on the dashboard',
+  async function () {
+    await this.actor.attemptsTo(ClickProjectsHome.now())
+    await this.actor.attemptsTo(EnsureDashboardDisplaysNotification.now())
+    await this.actor.attemptsTo(
+      ClickViewDetailsLink.forLastCompletedExemption()
+    )
+  }
+)
 
 When('the user navigates to the dashboard', async function () {
   await this.actor.attemptsTo(NavigateToDashboard.now())
@@ -82,13 +92,6 @@ When(
         this.actor.recalls('exemption').projectName
       )
     )
-  }
-)
-
-Then(
-  'the dashboard displays the submitted notification correctly',
-  async function () {
-    await this.actor.attemptsTo(EnsureDashboardDisplaysNotification.now())
   }
 )
 
@@ -126,3 +129,13 @@ Then('the notification is removed from the dashboard', async function () {
     EnsureEmptyStateMessage.shows('You currently have no projects.')
   )
 })
+
+Then(
+  'the user is able to view the notification in a summary format',
+  async function () {
+    await this.actor.attemptsTo(
+      EnsurePageHeading.is('View notification details')
+    )
+    await this.actor.attemptsTo(EnsureViewDetailsPage.showsAllAnswers())
+  }
+)
