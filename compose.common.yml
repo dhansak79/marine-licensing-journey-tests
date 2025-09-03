@@ -1,0 +1,186 @@
+services:
+  redis-frontend:
+    image: redis:7.2.3-alpine3.18
+    ports:
+      - '6380:6379'
+    restart: always
+    networks:
+      cdp-tenant:
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'PING']
+      interval: 5s
+      start_period: 2s
+      retries: 5
+
+  selenium-chrome:
+    image: selenium/standalone-chrome:123.0
+    ports:
+      - 4444:4444
+    networks:
+      - cdp-tenant
+
+  defra-id-stub:
+    image: defradigital/cdp-defra-id-stub:latest
+    ports:
+      - '3200:3200'
+    restart: unless-stopped
+    environment:
+      PORT: 3200
+      REDIS_HOST: redis-frontend
+      REDIS_PORT: 6380
+      USE_SINGLE_INSTANCE_CACHE: true
+      NODE_ENV: development
+      APP_BASE_URL: http://defra-id-stub:3200
+    depends_on:
+      redis-frontend:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3200/health']
+      interval: 5s
+      start_period: 5s
+      retries: 3
+    networks:
+      cdp-tenant:
+        aliases:
+          - localhost
+
+  marine-licensing-frontend:
+    image: defradigital/marine-licensing-frontend:${MARINE_LICENSING_FRONTEND_VERSION:-latest}
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+    env_file:
+      - 'compose/aws.env'
+      - './docker/config/defaults.env'
+    environment:
+      PORT: 3000
+      DEFRA_ID_ENABLED: true
+      NODE_ENV: development
+      USE_SINGLE_INSTANCE_CACHE: true
+      MARINE_LICENSING_BACKEND_API_URL: http://marine-licensing-backend:3001
+      CDP_UPLOADER_BASE_URL: http://cdp-uploader:7337
+      APP_BASE_URL: http://marine-licensing-frontend:3000
+      DEFRA_ID_OIDC_CONFIGURATION_URL: http://defra-id-stub:3200/cdp-defra-id-stub/.well-known/openid-configuration
+      REDIS_HOST: redis-frontend
+      REDIS_PORT: 6380
+    command: 'node .'
+    depends_on:
+      marine-licensing-backend:
+        condition: service_healthy
+      redis-frontend:
+        condition: service_healthy
+    networks:
+      - cdp-tenant
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 10s
+      start_period: 30s
+      retries: 5
+
+  localstack:
+    image: localstack/localstack:3.0.2
+    ports:
+      - '4566:4566' # LocalStack Gateway
+      - '4510-4559:4510-4559' # external services port range
+    restart: unless-stopped
+    env_file:
+      - 'compose/aws.env'
+    environment:
+      DEBUG: ${DEBUG:-1}
+      LS_LOG: WARN # Localstack DEBUG Level
+      SERVICES: s3,sqs,sns,firehose
+      LOCALSTACK_HOST: 127.0.0.1
+    volumes:
+      - '${TMPDIR:-/tmp}/localstack:/var/lib/localstack'
+      - ./compose/start-localstack.sh:/etc/localstack/init/ready.d/start-localstack.sh
+    healthcheck:
+      test: ['CMD', 'curl', 'localhost:4566']
+      interval: 5s
+      start_period: 5s
+      retries: 3
+    networks:
+      - cdp-tenant
+
+  redis:
+    image: redis:7
+    restart: always
+    networks:
+      - cdp-tenant
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'PING']
+      interval: 5s
+      start_period: 2s
+      retries: 5
+
+  mongodb:
+    image: mongo:6
+    volumes:
+      - ./docker/scripts/mongodb:/docker-entrypoint-initdb.d
+    networks:
+      - cdp-tenant
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', 'db.hello().ok']
+      interval: 5s
+      start_period: 5s
+      retries: 3
+
+  cdp-uploader:
+    image: defradigital/cdp-uploader:${CDP_UPLOADER_VERSION:-latest}
+    ports:
+      - '7337:7337'
+    restart: unless-stopped
+    links:
+      - 'localstack:localstack'
+      - 'redis:redis'
+    depends_on:
+      localstack:
+        condition: service_healthy
+    env_file:
+      - 'compose/aws.env'
+    environment:
+      VIRTUAL_HOST: ~^uploader\..*\.sslip\.io
+      VIRTUAL_PATH: /
+      VIRTUAL_PORT: 7337
+      PORT: 7337
+      NODE_ENV: development
+      REDIS_HOST: redis
+      APP_BASE_URL: http://cdp-uploader:7337
+      USE_SINGLE_INSTANCE_CACHE: true
+      MOCK_VIRUS_SCAN_ENABLED: true
+      MOCK_VIRUS_RESULT_DELAY: 3
+      MOCK_VIRUS_REGEX: '.*virus.*'
+      CONSUMER_BUCKETS: '${CDP_UPLOAD_BUCKET:-mmo-uploads},cdp-uploader-quarantine'
+      SQS_ENDPOINT: http://localstack:4566
+      S3_ENDPOINT: http://localstack:4566
+    networks:
+      - cdp-tenant
+
+  marine-licensing-backend:
+    image: defradigital/marine-licensing-backend:${MARINE_LICENSING_BACKEND_VERSION:-latest}
+    restart: unless-stopped
+    env_file:
+      - ./docker/config/defaults.env
+    environment:
+      - PORT=3001
+      - MONGODB_URI=mongodb://mongodb:27017/marine-licensing
+      - DEFRA_ID_ENABLED=false
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - 3001:3001
+    networks:
+      - cdp-tenant
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3001/health']
+      interval: 10s
+      start_period: 30s
+      retries: 5
+
+networks:
+  cdp-tenant:
+    driver: bridge
+volumes:
+  mongodb-data:
