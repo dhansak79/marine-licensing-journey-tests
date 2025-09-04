@@ -3,7 +3,7 @@ export default class DashboardPage {
 
   static locators = {
     pageHeading: 'h1',
-    projectsHomeLink: '//a[normalize-space(text())="Projects home"]',
+    projectsHomeLink: '//a[normalize-space(text())="Projects"]',
     emptyStateMessage:
       '//p[contains(text(), "You currently have no projects.")]',
     projectsTable: 'table.govuk-table',
