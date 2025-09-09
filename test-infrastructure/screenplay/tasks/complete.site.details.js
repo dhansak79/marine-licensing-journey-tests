@@ -193,6 +193,18 @@ export default class CompleteSiteDetails extends Task {
       this.browseTheWeb,
       'yes'
     )
+    await this.handleMultiSiteActivityDescription()
+  }
+
+  async handleMultiSiteActivityDescription() {
+    if (this.siteDetails.activityDescription) {
+      await ActivityDescriptionPageInteractions.enterActivityDescriptionAndContinue(
+        this.browseTheWeb,
+        this.siteDetails.activityDescription
+      )
+    } else {
+      await ActivityDescriptionPageInteractions.clickContinue(this.browseTheWeb)
+    }
   }
 
   async handleSingleSiteActivityDates() {
@@ -204,8 +216,6 @@ export default class CompleteSiteDetails extends Task {
     } else {
       await ActivityDatesPageInteractions.clickContinue(this.browseTheWeb)
     }
-
-    // After activity dates, handle activity description for single site
     await this.handleSingleSiteActivityDescription()
   }
 
