@@ -22,16 +22,16 @@ export default class MultiSiteSiteDetailsTask extends BaseSiteDetailsTask {
 
   async processSites() {
     const sites = this.siteDetails.sites
-    const isSharedActivityDates = this.siteDetails.sameActivityDates === 'yes'
+    const isSharedActivityDates = this.siteDetails.sameActivityDates === true
     const isSharedActivityDescription =
-      this.siteDetails.sameActivityDescription === 'yes'
+      this.siteDetails.sameActivityDescription === true
 
     for (let siteIndex = 0; siteIndex < sites.length; siteIndex++) {
       const currentSite = sites[siteIndex]
       const isFirstSite = siteIndex === 0
       const isLastSite = siteIndex === sites.length - 1
 
-      await this.enterSiteName(currentSite.siteName)
+      await this.enterSiteName(currentSite.siteName, isFirstSite)
 
       if (isFirstSite) {
         await this.handleFirstSitePreferences(
@@ -58,7 +58,15 @@ export default class MultiSiteSiteDetailsTask extends BaseSiteDetailsTask {
     }
   }
 
-  async enterSiteName(siteName) {
+  async enterSiteName(siteName, isFirstSite = false) {
+    // For sites after the first, wait for navigation to complete
+    if (!isFirstSite) {
+      await this.browseTheWeb.waitForNavigationTo(
+        '/exemption/site-name',
+        '#siteName'
+      )
+    }
+
     await this.browseTheWeb.setValue('#siteName', siteName)
     await this.browseTheWeb.click('button[type="submit"]')
   }
@@ -117,7 +125,7 @@ export default class MultiSiteSiteDetailsTask extends BaseSiteDetailsTask {
       if (isFirstSite) {
         await this.selectActivityDescriptionPreference()
 
-        if (this.siteDetails.sameActivityDescription === 'yes') {
+        if (this.siteDetails.sameActivityDescription === true) {
           await this.enterSharedActivityDescription()
         }
       }
@@ -145,6 +153,10 @@ export default class MultiSiteSiteDetailsTask extends BaseSiteDetailsTask {
     isSharedActivityDescription
   ) {
     if (!isSharedActivityDescription) {
+      await this.browseTheWeb.waitForNavigationTo(
+        '/exemption/site-details-activity-description',
+        '#activityDescription'
+      )
       await ActivityDescriptionPageInteractions.enterActivityDescriptionAndContinue(
         this.browseTheWeb,
         currentSite.activityDescription

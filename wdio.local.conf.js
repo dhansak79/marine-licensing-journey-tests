@@ -81,7 +81,7 @@ export const config = {
     await browser.takeScreenshot()
   },
   afterScenario: async function (scenario, world) {
-    if (scenario.result.status === 'FAILED') {
+    if (scenario.result?.status === 'FAILED') {
       await browser.takeScreenshot()
     }
 
@@ -117,7 +117,7 @@ export const config = {
           return reject(reportError)
         }
 
-        allure(['open'])
+        // allure(['open'])
         resolve()
       })
     })

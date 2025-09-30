@@ -1,6 +1,18 @@
 import ActivityDatesFactory from './activity-dates.factory.js'
 import SiteDetailsFactory from './site-details.factory.js'
 
+function setExemptionLevelProperties(builder, siteDetails) {
+  const firstSite = siteDetails.sites?.[0]
+
+  if (siteDetails.sameActivityDates && firstSite?.activityDates) {
+    builder.setProperty('activityDates', firstSite.activityDates)
+  }
+
+  if (siteDetails.sameActivityDescription && firstSite?.activityDescription) {
+    builder.setProperty('activityDescription', firstSite.activityDescription)
+  }
+}
+
 export const siteDetailsExtension = {
   forACircleWithWGS84Coordinates: (builder) => {
     builder.setProperty(
@@ -63,6 +75,37 @@ export const siteDetailsExtension = {
       'siteDetails',
       SiteDetailsFactory.createMixedMultipleSites()
     )
+    return builder
+  },
+  forMixedMultipleSitesWithSameActivityDatesAndDescriptions: (builder) => {
+    const siteDetails =
+      SiteDetailsFactory.createMixedMultipleSitesWithSameActivityDatesAndDescriptions()
+    builder.setProperty('siteDetails', siteDetails)
+
+    setExemptionLevelProperties(builder, siteDetails)
+
+    return builder
+  },
+  forMixedMultipleSitesWithSameActivityDatesAndDifferentDescriptions: (
+    builder
+  ) => {
+    const siteDetails =
+      SiteDetailsFactory.createMixedMultipleSitesWithSameActivityDatesAndDifferentDescriptions()
+    builder.setProperty('siteDetails', siteDetails)
+
+    setExemptionLevelProperties(builder, siteDetails)
+
+    return builder
+  },
+  forMixedMultipleSitesWithDifferentActivityDatesAndSameDescriptions: (
+    builder
+  ) => {
+    const siteDetails =
+      SiteDetailsFactory.createMixedMultipleSitesWithDifferentActivityDatesAndSameDescriptions()
+    builder.setProperty('siteDetails', siteDetails)
+
+    setExemptionLevelProperties(builder, siteDetails)
+
     return builder
   },
   withKMLUpload: (builder) => {
