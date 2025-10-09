@@ -61,6 +61,94 @@ Given(
 )
 
 Given(
+  'a user is uploading a kml file with multiple sites with different activity dates and different descriptions',
+  function () {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName().andSiteDetails.forMultiSiteKMLUploadWithDifferentActivityDatesAndDifferentDescriptions()
+    )
+  }
+)
+
+Given(
+  'a user is uploading a kml file with multiple sites with same activity dates and descriptions',
+  function () {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName().andSiteDetails.forMultiSiteKMLUploadWithSameActivityDatesAndDescriptions()
+    )
+  }
+)
+
+Given(
+  'a user is uploading a kml file with multiple sites with different activity dates and same descriptions',
+  function () {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName().andSiteDetails.forMultiSiteKMLUploadWithDifferentActivityDatesAndSameDescriptions()
+    )
+  }
+)
+
+Given(
+  'a user is uploading a kml file with multiple sites with same activity dates and different descriptions',
+  function () {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName().andSiteDetails.forMultiSiteKMLUploadWithSameActivityDatesAndDifferentDescriptions()
+    )
+  }
+)
+
+Given(
+  'a user is uploading a shapefile with multiple sites with different activity dates and different descriptions',
+  function () {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName().andSiteDetails.forMultiSiteShapefileUploadWithDifferentActivityDatesAndDifferentDescriptions()
+    )
+  }
+)
+
+Given(
+  'a user is uploading a shapefile with multiple sites with same activity dates and descriptions',
+  function () {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName().andSiteDetails.forMultiSiteShapefileUploadWithSameActivityDatesAndDescriptions()
+    )
+  }
+)
+
+Given(
+  'a user is uploading a shapefile with multiple sites with different activity dates and same descriptions',
+  function () {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName().andSiteDetails.forMultiSiteShapefileUploadWithDifferentActivityDatesAndSameDescriptions()
+    )
+  }
+)
+
+Given(
+  'a user is uploading a shapefile with multiple sites with same activity dates and different descriptions',
+  function () {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName().andSiteDetails.forMultiSiteShapefileUploadWithSameActivityDatesAndDifferentDescriptions()
+    )
+  }
+)
+
+Given(
   'an exemption for a triangular site using WGS84 coordinates with point 1 {string}, {string}, point 2 {string}, {string} and point 3 {string}, {string}',
   function (lat1, lng1, lat2, lng2, lat3, lng3) {
     this.actor = new Actor('Alice')

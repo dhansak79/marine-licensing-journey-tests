@@ -24,6 +24,9 @@ export default class SiteDetailsFactory {
     NO: 'no'
   }
 
+  static MULTI_SITE_KML_FILE = 'test/resources/EXE_2025_00098-LOCATIONS.kml'
+  static MULTI_SITE_SHAPEFILE = 'test/resources/Suffolk MMO shapefiles.zip'
+
   static DEFAULT_COORDINATES = {
     circle: {
       WGS84: { latitude: 51.507412, longitude: -0.127812, width: 20 },
@@ -162,6 +165,96 @@ export default class SiteDetailsFactory {
     return this._createFileUpload(
       'Shapefile',
       'test/resources/valid-shapefile.zip'
+    )
+  }
+
+  static createMultiSiteKMLUpload() {
+    return this._createMultiSiteFileUpload('KML', this.MULTI_SITE_KML_FILE, {
+      sameActivityDates: false,
+      sameActivityDescription: false
+    })
+  }
+
+  static createMultiSiteKMLUploadWithSameActivityDatesAndDescriptions() {
+    return this._createMultiSiteFileUpload('KML', this.MULTI_SITE_KML_FILE, {
+      sameActivityDates: true,
+      sameActivityDescription: true
+    })
+  }
+
+  static createMultiSiteKMLUploadWithDifferentActivityDatesAndSameDescriptions() {
+    return this._createMultiSiteFileUpload('KML', this.MULTI_SITE_KML_FILE, {
+      sameActivityDates: false,
+      sameActivityDescription: true
+    })
+  }
+
+  static createMultiSiteKMLUploadWithSameActivityDatesAndDifferentDescriptions() {
+    return this._createMultiSiteFileUpload('KML', this.MULTI_SITE_KML_FILE, {
+      sameActivityDates: true,
+      sameActivityDescription: false
+    })
+  }
+
+  static createMultiSiteKMLUploadWithDifferentActivityDatesAndDifferentDescriptions() {
+    return this._createMultiSiteFileUpload('KML', this.MULTI_SITE_KML_FILE, {
+      sameActivityDates: false,
+      sameActivityDescription: false
+    })
+  }
+
+  static createMultiSiteShapefileUpload() {
+    return this._createMultiSiteFileUpload(
+      'Shapefile',
+      this.MULTI_SITE_SHAPEFILE,
+      {
+        sameActivityDates: false,
+        sameActivityDescription: false
+      }
+    )
+  }
+
+  static createMultiSiteShapefileUploadWithSameActivityDatesAndDescriptions() {
+    return this._createMultiSiteFileUpload(
+      'Shapefile',
+      this.MULTI_SITE_SHAPEFILE,
+      {
+        sameActivityDates: true,
+        sameActivityDescription: true
+      }
+    )
+  }
+
+  static createMultiSiteShapefileUploadWithDifferentActivityDatesAndSameDescriptions() {
+    return this._createMultiSiteFileUpload(
+      'Shapefile',
+      this.MULTI_SITE_SHAPEFILE,
+      {
+        sameActivityDates: false,
+        sameActivityDescription: true
+      }
+    )
+  }
+
+  static createMultiSiteShapefileUploadWithSameActivityDatesAndDifferentDescriptions() {
+    return this._createMultiSiteFileUpload(
+      'Shapefile',
+      this.MULTI_SITE_SHAPEFILE,
+      {
+        sameActivityDates: true,
+        sameActivityDescription: false
+      }
+    )
+  }
+
+  static createMultiSiteShapefileUploadWithDifferentActivityDatesAndDifferentDescriptions() {
+    return this._createMultiSiteFileUpload(
+      'Shapefile',
+      this.MULTI_SITE_SHAPEFILE,
+      {
+        sameActivityDates: false,
+        sameActivityDescription: false
+      }
     )
   }
 
@@ -305,6 +398,50 @@ export default class SiteDetailsFactory {
     if (filePath) baseData.filePath = filePath
 
     return { ...baseData, sites: [siteData] }
+  }
+
+  static _createMultiSiteFileUpload(
+    fileType,
+    filePath,
+    { sameActivityDates, sameActivityDescription }
+  ) {
+    const sharedActivityDates = ActivityDatesModel.generateValidActivityDates()
+    const sharedActivityDescription =
+      ActivityDescriptionModel.generateActivityDescription()
+
+    const siteNames = [
+      'Kentish Flats and Kentish Flats Extension',
+      'Thanet Offshore Wind Farm'
+    ]
+
+    const sites = siteNames.map((name, index) => {
+      const activityDates = sameActivityDates
+        ? sharedActivityDates
+        : ActivityDatesModel.generateValidActivityDates()
+      const activityDescription = sameActivityDescription
+        ? sharedActivityDescription
+        : ActivityDescriptionModel.generateActivityDescription()
+
+      return {
+        siteName: name,
+        siteNumber: index + 1,
+        coordinatesEntryMethod: this.ENTRY_METHODS.FILE_UPLOAD,
+        fileType,
+        filePath,
+        activityDates,
+        activityDescription
+      }
+    })
+
+    return {
+      multipleSitesEnabled: true,
+      sameActivityDates,
+      sameActivityDescription,
+      coordinatesEntryMethod: this.ENTRY_METHODS.FILE_UPLOAD,
+      fileType,
+      filePath,
+      sites
+    }
   }
 
   static _createCoordinateSet(coordinatePairs, system) {
