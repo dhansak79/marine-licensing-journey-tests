@@ -71,13 +71,14 @@ export default class ExemptionFactory {
   }
 
   static createFileUploadBase(fileType, options = {}) {
-    const { filePath, generateFile } = options
+    const { filePath, generateFile, expectValidationError = false } = options
     const actualFilePath = generateFile ? generateFile() : filePath
 
     const siteDetails = {
       ...SiteDetailsFactory.createFileUpload(),
       fileType: this.generateFileTypeModel(fileType),
-      ...(actualFilePath && { filePath: actualFilePath })
+      ...(actualFilePath && { filePath: actualFilePath }),
+      expectValidationError
     }
 
     this.loadExpectedDataIntoSiteDetails(siteDetails, actualFilePath)
@@ -115,7 +116,8 @@ export default class ExemptionFactory {
 
   static createKMLVirusUpload() {
     return this.createFileUploadBase('kml', {
-      filePath: 'test/resources/nasty-virus-here.kml'
+      filePath: 'test/resources/nasty-virus-here.kml',
+      expectValidationError: true
     })
   }
 
@@ -126,16 +128,23 @@ export default class ExemptionFactory {
   static createKMLWrongFileType() {
     return this.createFileUploadBase('kml', {
       filePath:
-        'test/resources/uk-government-gathers-business-and-environment-leaders-in-support-of-un-nature-agreement.html'
+        'test/resources/uk-government-gathers-business-and-environment-leaders-in-support-of-un-nature-agreement.html',
+      expectValidationError: true
     })
   }
 
   static createKMLLargeFile(filePath) {
-    return this.createFileUploadBase('kml', { filePath })
+    return this.createFileUploadBase('kml', {
+      filePath,
+      expectValidationError: true
+    })
   }
 
   static createKMLEmptyFile(filePath) {
-    return this.createFileUploadBase('kml', { filePath })
+    return this.createFileUploadBase('kml', {
+      filePath,
+      expectValidationError: true
+    })
   }
 
   static createShapefileUpload() {
@@ -146,7 +155,8 @@ export default class ExemptionFactory {
 
   static createShapefileVirusUpload() {
     return this.createFileUploadBase('shapefile', {
-      filePath: 'test/resources/mygeodata-virus.zip'
+      filePath: 'test/resources/mygeodata-virus.zip',
+      expectValidationError: true
     })
   }
 
@@ -157,15 +167,22 @@ export default class ExemptionFactory {
   static createShapefileWrongFileType() {
     return this.createFileUploadBase('shapefile', {
       filePath:
-        'test/resources/uk-government-gathers-business-and-environment-leaders-in-support-of-un-nature-agreement.html'
+        'test/resources/uk-government-gathers-business-and-environment-leaders-in-support-of-un-nature-agreement.html',
+      expectValidationError: true
     })
   }
 
   static createShapefileLargeFile(filePath) {
-    return this.createFileUploadBase('shapefile', { filePath })
+    return this.createFileUploadBase('shapefile', {
+      filePath,
+      expectValidationError: true
+    })
   }
 
   static createShapefileEmptyFile(filePath) {
-    return this.createFileUploadBase('shapefile', { filePath })
+    return this.createFileUploadBase('shapefile', {
+      filePath,
+      expectValidationError: true
+    })
   }
 }
