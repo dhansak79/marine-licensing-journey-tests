@@ -1,6 +1,11 @@
 import { expect } from 'chai'
 import { ERROR_MESSAGES } from '../constants/error-messages.js'
-import { UploadFileAndContinue } from '../interactions/index.js'
+import {
+  AddMissingActivityDates,
+  AddMissingActivityDescription,
+  AddMissingSiteName,
+  UploadFileAndContinue
+} from '../interactions/index.js'
 import {
   ActivityDescriptionPageInteractions,
   SameActivityDatesPageInteractions,
@@ -21,6 +26,7 @@ export default class MultiSiteFileUploadSiteDetailsTask extends BaseSiteDetailsT
     await this.uploadFile()
     await this.handleActivityDatesPreference()
     await this.handleActivityDescriptionPreference()
+    await this.addMissingDataFromReviewPage()
     await this.saveIfRequired()
   }
 
@@ -50,10 +56,8 @@ export default class MultiSiteFileUploadSiteDetailsTask extends BaseSiteDetailsT
     )
 
     if (isSharedActivityDates) {
-      // Enter dates once for all sites
       await this.actor.attemptsTo(CompleteActivityDates.now())
     }
-    // If false, dates will be added manually on review page (future feature)
   }
 
   async handleActivityDescriptionPreference() {
@@ -66,13 +70,42 @@ export default class MultiSiteFileUploadSiteDetailsTask extends BaseSiteDetailsT
     )
 
     if (isSharedActivityDescription) {
-      // Enter description once for all sites
       const firstSiteDescription = this.siteDetails.sites[0].activityDescription
       await ActivityDescriptionPageInteractions.enterActivityDescriptionAndContinue(
         this.browseTheWeb,
         firstSiteDescription
       )
     }
-    // If false, descriptions will be added manually on review page (future feature)
+    // If false, descriptions will be added manually on review page (ML-364)
+  }
+
+  async addMissingDataFromReviewPage() {
+    const hasDifferentDates = this.siteDetails.sameActivityDates === false
+    const hasDifferentDescriptions =
+      this.siteDetails.sameActivityDescription === false
+
+    const numberOfSites = this.siteDetails.sites.length
+
+    for (let i = 0; i < numberOfSites; i++) {
+      const siteNumber = i + 1
+      const site = this.siteDetails.sites[i]
+
+      await this.actor.attemptsTo(
+        AddMissingSiteName.forSite(siteNumber, site.siteName)
+      )
+
+      if (hasDifferentDates) {
+        await this.actor.attemptsTo(AddMissingActivityDates.forSite(siteNumber))
+      }
+
+      if (hasDifferentDescriptions) {
+        await this.actor.attemptsTo(
+          AddMissingActivityDescription.forSite(
+            siteNumber,
+            site.activityDescription
+          )
+        )
+      }
+    }
   }
 }

@@ -1,7 +1,13 @@
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import {
   ActivityDatesModel,
   ActivityDescriptionModel
 } from '../models/index.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 export default class SiteDetailsFactory {
   static ENTRY_METHODS = {
@@ -96,34 +102,6 @@ export default class SiteDetailsFactory {
 
   static createFileUpload() {
     return this._createFileUpload()
-  }
-
-  static createMultipleSites() {
-    const circleData = this._getCoordinateData(
-      this.SITE_TYPES.CIRCLE,
-      this.COORDINATE_SYSTEMS.WGS84
-    )
-
-    return this._createMultiSiteStructure({
-      sameActivityDates: true,
-      sameActivityDescription: false,
-      sites: [
-        this._createSingleSite({
-          siteName: 'Main Research Site',
-          siteNumber: 1,
-          siteType: this.SITE_TYPES.CIRCLE,
-          coordinateSystem: this.COORDINATE_SYSTEMS.WGS84,
-          coordinateData: circleData
-        }),
-        this._createSingleSite({
-          siteName: 'Marine Research Site Beta',
-          siteNumber: 2,
-          siteType: this.SITE_TYPES.CIRCLE,
-          coordinateSystem: this.COORDINATE_SYSTEMS.WGS84,
-          coordinateData: circleData
-        })
-      ]
-    })
   }
 
   static createMixedMultipleSites() {
@@ -345,12 +323,34 @@ export default class SiteDetailsFactory {
     const sharedActivityDescription =
       ActivityDescriptionModel.generateActivityDescription()
 
-    const siteNames = [
+    const expectedJsonPath = filePath.replace(/\.(kml|zip)$/, '.expected.json')
+    let numberOfSites = 2 // Default to 2 sites
+
+    try {
+      const fullPath = path.resolve(__dirname, '../../..', expectedJsonPath)
+      const expectedData = JSON.parse(fs.readFileSync(fullPath, 'utf8'))
+
+      numberOfSites = expectedData.extractedSites.length
+    } catch (error) {
+      console.warn(
+        `Could not read expected JSON file: ${expectedJsonPath}. Using default number of sites (2).`
+      )
+    }
+
+    const siteNamePatterns = [
       'Kentish Flats and Kentish Flats Extension',
-      'Thanet Offshore Wind Farm'
+      'Thanet Offshore Wind Farm',
+      'Greater Gabbard Wind Farm',
+      'London Array Offshore Wind Farm',
+      'Galloper Wind Farm',
+      'Race Bank Wind Farm',
+      'Dudgeon Offshore Wind Farm',
+      'Sheringham Shoal Offshore Wind Farm'
     ]
 
-    const sites = siteNames.map((name, index) => {
+    const sites = Array.from({ length: numberOfSites }, (_, index) => {
+      const siteName = siteNamePatterns[index] || `Marine Site ${index + 1}`
+
       const activityDates = sameActivityDates
         ? sharedActivityDates
         : ActivityDatesModel.generateValidActivityDates()
@@ -359,7 +359,7 @@ export default class SiteDetailsFactory {
         : ActivityDescriptionModel.generateActivityDescription()
 
       return {
-        siteName: name,
+        siteName,
         siteNumber: index + 1,
         coordinatesEntryMethod: this.ENTRY_METHODS.FILE_UPLOAD,
         fileType,

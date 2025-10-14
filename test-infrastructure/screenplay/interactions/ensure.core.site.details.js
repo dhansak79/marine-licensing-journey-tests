@@ -1,4 +1,5 @@
 import { expect } from 'chai'
+import { formatDateObjectToDisplay } from '../../helpers/date-formatter.js'
 import ReviewSiteDetailsPage from '../../pages/review.site.details.page.js'
 import Task from '../base/task.js'
 
@@ -139,7 +140,6 @@ export default class EnsureCoreSiteDetails extends Task {
     const expectedCoordinates = exemption?.siteDetails?.expectedCoordinates
     const expectedSites = exemption?.siteDetails?.expectedSites
 
-    // Handle multi-site verification
     if (expectedSites) {
       await this.verifyMultiSiteExtractedCoordinates(
         browseTheWeb,
@@ -148,7 +148,6 @@ export default class EnsureCoreSiteDetails extends Task {
       return
     }
 
-    // Handle single-site verification
     this.validateExpectedCoordinates(expectedCoordinates)
 
     const actualGeoJSON = await this.getActualCoordinatesFromDOM(browseTheWeb)
@@ -183,7 +182,6 @@ export default class EnsureCoreSiteDetails extends Task {
   }
 
   async verifyMultiSiteIncompleteFields(browseTheWeb, siteDetails) {
-    // Only verify "Incomplete" fields for multi-site file uploads with different dates/descriptions
     if (!siteDetails?.multipleSitesEnabled || !siteDetails?.expectedSites) {
       return
     }
@@ -192,63 +190,104 @@ export default class EnsureCoreSiteDetails extends Task {
     const hasDifferentDescriptions =
       siteDetails.sameActivityDescription === false
 
-    // If dates and descriptions are the same, EnsureActivityDetailsCard will verify them
-    if (!hasDifferentDates && !hasDifferentDescriptions) {
-      return
-    }
-
-    // Verify incomplete fields on individual sites (only when dates/descriptions are different)
     const numberOfSites = siteDetails.expectedSites.length
 
-    for (let i = 1; i <= numberOfSites; i++) {
-      await this.verifySiteIncompleteFields(
-        browseTheWeb,
-        i,
+    for (let i = 0; i < numberOfSites; i++) {
+      const siteNumber = i + 1
+      const expectedSite = siteDetails.sites[i]
+
+      await this.verifySiteFields(browseTheWeb, {
+        siteNumber,
+        expectedSite,
         hasDifferentDates,
         hasDifferentDescriptions
+      })
+    }
+  }
+
+  async verifySiteFields(browseTheWeb, options) {
+    const {
+      siteNumber,
+      expectedSite,
+      hasDifferentDates,
+      hasDifferentDescriptions
+    } = options
+
+    const siteNameElement = await browseTheWeb.getElement(
+      ReviewSiteDetailsPage.getSiteName(siteNumber)
+    )
+    const actualSiteName = await siteNameElement.getText()
+    expect(actualSiteName.trim()).to.equal(
+      expectedSite.siteName,
+      `Site ${siteNumber} name mismatch`
+    )
+
+    if (hasDifferentDates) {
+      await this.verifyActivityDates(browseTheWeb, siteNumber, expectedSite)
+    }
+
+    if (hasDifferentDescriptions) {
+      await this.verifyActivityDescription(
+        browseTheWeb,
+        siteNumber,
+        expectedSite
       )
     }
   }
 
-  async verifySiteIncompleteFields(
-    browseTheWeb,
-    siteNumber,
-    hasDifferentDates,
-    hasDifferentDescriptions
-  ) {
-    // Verify Site name is Incomplete (always incomplete for file uploads until ML-361)
-    const siteNameElement = await browseTheWeb.getElement(
-      ReviewSiteDetailsPage.getSiteName(siteNumber)
+  async verifyActivityDates(browseTheWeb, siteNumber, expectedSite) {
+    const datesElement = await browseTheWeb.getElement(
+      ReviewSiteDetailsPage.getSiteActivityDates(siteNumber)
     )
-    const siteNameText = await siteNameElement.getText()
-    expect(siteNameText.trim()).to.equal(
-      'Incomplete',
-      `Site ${siteNumber} name should be "Incomplete"`
+    const actualDatesText = await datesElement.getText()
+    const expectedDatesText = this.formatActivityDatesForDisplay(
+      expectedSite.activityDates
     )
+    expect(actualDatesText.trim()).to.equal(
+      expectedDatesText,
+      `Site ${siteNumber} activity dates mismatch`
+    )
+  }
 
-    // Verify Activity dates is Incomplete (if different dates were selected)
-    if (hasDifferentDates) {
-      const datesElement = await browseTheWeb.getElement(
-        ReviewSiteDetailsPage.getSiteActivityDates(siteNumber)
-      )
-      const datesText = await datesElement.getText()
-      expect(datesText.trim()).to.equal(
-        'Incomplete',
-        `Site ${siteNumber} activity dates should be "Incomplete"`
-      )
+  async verifyActivityDescription(browseTheWeb, siteNumber, expectedSite) {
+    const descriptionElement = await browseTheWeb.getElement(
+      ReviewSiteDetailsPage.getSiteActivityDescription(siteNumber)
+    )
+    const actualDescription = await descriptionElement.getText()
+    expect(actualDescription.trim()).to.equal(
+      expectedSite.activityDescription,
+      `Site ${siteNumber} activity description mismatch`
+    )
+  }
+
+  formatActivityDatesForDisplay(activityDates) {
+    if (!this.hasValidActivityDatesStructure(activityDates)) {
+      return ''
     }
 
-    // Verify Activity description is Incomplete (if different descriptions were selected)
-    if (hasDifferentDescriptions) {
-      const descriptionElement = await browseTheWeb.getElement(
-        ReviewSiteDetailsPage.getSiteActivityDescription(siteNumber)
-      )
-      const descriptionText = await descriptionElement.getText()
-      expect(descriptionText.trim()).to.equal(
-        'Incomplete',
-        `Site ${siteNumber} activity description should be "Incomplete"`
-      )
+    const formattedStart = formatDateObjectToDisplay(activityDates.startDate)
+    const formattedEnd = formatDateObjectToDisplay(activityDates.endDate)
+
+    return `${formattedStart} to ${formattedEnd}`
+  }
+
+  hasValidActivityDatesStructure(activityDates) {
+    if (!activityDates) {
+      return false
     }
+
+    if (!activityDates.startDate || !activityDates.endDate) {
+      return false
+    }
+
+    return (
+      this.hasValidDateObject(activityDates.startDate) &&
+      this.hasValidDateObject(activityDates.endDate)
+    )
+  }
+
+  hasValidDateObject(dateObject) {
+    return dateObject.day && dateObject.month && dateObject.year
   }
 
   validateFileType(expectedFileType, siteDetails) {
@@ -303,8 +342,6 @@ export default class EnsureCoreSiteDetails extends Task {
       case 'LineString':
         return coordinates
       case 'Polygon':
-        // Polygon coordinates are [outerRing, hole1, hole2, ...]
-        // We only need the outer ring
         return coordinates[0]
       case 'Point':
         return [coordinates]

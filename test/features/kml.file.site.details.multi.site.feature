@@ -1,4 +1,4 @@
-@issue=ML-75 @issue=ML-76 @issue=ML-119 @issue=ML-120 @issue=ML-232
+@issue=ML-75 @issue=ML-76 @issue=ML-119 @issue=ML-120 @issue=ML-232 @issue=ML-364 @issue=ML-388
 Feature: Multi-site: Provide kml files with multiple sites for an exemption notification
   These tests use a mix of circle and polygon sites with OSGB36 and WGS84 coordinate systems.
 
@@ -33,4 +33,3 @@ Feature: Multi-site: Provide kml files with multiple sites for an exemption noti
     When the site details task is completed
     Then the site details review page shows the site details
     And the "Site details" task status is "Completed"
-    
