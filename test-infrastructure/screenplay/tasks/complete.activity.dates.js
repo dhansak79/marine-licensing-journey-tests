@@ -5,14 +5,14 @@ import { ERROR_MESSAGES } from '../constants/error-messages.js'
 import Memory from '../memory.js'
 
 export default class CompleteActivityDates extends Task {
-  constructor(actionType = 'saveAndContinue', siteNumber = null) {
+  constructor(actionType = 'saveAndContinue', siteNumber = 1) {
     super()
     this.actionType = actionType
     this.siteNumber = siteNumber
   }
 
   static now() {
-    return new CompleteActivityDates('saveAndContinue', null)
+    return new CompleteActivityDates('saveAndContinue', 1)
   }
 
   static forSite(siteNumber) {
@@ -22,10 +22,10 @@ export default class CompleteActivityDates extends Task {
   async performAs(actor) {
     const exemption = actor.recalls('exemption')
     if (!exemption) {
-      expect.fail(ERROR_MESSAGES.MISSING_EXEMPTION('activity description'))
+      expect.fail(ERROR_MESSAGES.MISSING_EXEMPTION('activity dates'))
     }
 
-    const siteIndex = this.siteNumber ? this.siteNumber - 1 : 0
+    const siteIndex = this.siteNumber - 1
     const activityDates =
       exemption.siteDetails?.sites?.[siteIndex]?.activityDates
 

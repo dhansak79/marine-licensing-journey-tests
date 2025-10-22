@@ -1,11 +1,12 @@
 import {
-  ActivityDescriptionPageInteractions,
   SameActivityDatesPageInteractions,
   SameActivityDescriptionPageInteractions,
   SiteDetailsReviewPageInteractions
 } from '../page-interactions/index.js'
 import BaseSiteDetailsTask from './base-site-details-task.js'
 import CompleteActivityDates from './complete.activity.dates.js'
+import CompleteActivityDescription from './complete.activity.description.js'
+import CompleteSiteName from './complete.site.name.js'
 import { CoordinateEntryStrategy } from './coordinate-entry-strategy.js'
 
 export default class MultiSiteSiteDetailsTask extends BaseSiteDetailsTask {
@@ -15,7 +16,7 @@ export default class MultiSiteSiteDetailsTask extends BaseSiteDetailsTask {
 
   async executeFlow() {
     await this.navigateToSiteDetailsStart()
-    await this.handleSingleOrMultipleSites() // Will select 'yes' for multiple sites
+    await this.handleSingleOrMultipleSites()
     await this.processSites()
     await this.saveIfRequired()
   }
@@ -28,10 +29,11 @@ export default class MultiSiteSiteDetailsTask extends BaseSiteDetailsTask {
 
     for (let siteIndex = 0; siteIndex < sites.length; siteIndex++) {
       const currentSite = sites[siteIndex]
+      const siteNumber = siteIndex + 1
       const isFirstSite = siteIndex === 0
       const isLastSite = siteIndex === sites.length - 1
 
-      await this.enterSiteName(currentSite.siteName, isFirstSite)
+      await this.actor.attemptsTo(CompleteSiteName.forSite(siteNumber))
 
       if (isFirstSite) {
         await this.handleFirstSitePreferences(
@@ -40,136 +42,70 @@ export default class MultiSiteSiteDetailsTask extends BaseSiteDetailsTask {
         )
       }
 
-      await this.handleSiteActivityDates(
-        currentSite,
-        isSharedActivityDates,
-        isFirstSite,
-        isSharedActivityDescription
-      )
-      await this.handleSiteActivityDescription(
-        currentSite,
-        isSharedActivityDescription
-      )
-      await this.handleSiteCoordinates(currentSite)
+      if (!isSharedActivityDates) {
+        await this.handleSiteSpecificDates(
+          siteNumber,
+          isFirstSite,
+          isSharedActivityDescription
+        )
+      }
+
+      if (!isSharedActivityDescription) {
+        await this.actor.attemptsTo(
+          CompleteActivityDescription.forSite(siteNumber)
+        )
+      }
+
+      const strategy = new CoordinateEntryStrategy(this.browseTheWeb)
+      await strategy.enterCoordinates(currentSite, this.config)
 
       if (!isLastSite) {
-        await this.addAnotherSite()
+        await SiteDetailsReviewPageInteractions.addAnotherSite(
+          this.browseTheWeb
+        )
       }
     }
-  }
-
-  async enterSiteName(siteName, isFirstSite = false) {
-    // For sites after the first, wait for navigation to complete
-    if (!isFirstSite) {
-      await this.browseTheWeb.waitForNavigationTo(
-        '/exemption/site-name',
-        '#siteName'
-      )
-    }
-
-    await this.browseTheWeb.setValue('#siteName', siteName)
-    await this.browseTheWeb.click('button[type="submit"]')
   }
 
   async handleFirstSitePreferences(
     isSharedActivityDates,
     isSharedActivityDescription
   ) {
-    await this.selectActivityDatesPreference()
-
-    if (isSharedActivityDates) {
-      await this.enterSharedActivityDates()
-      await this.selectActivityDescriptionPreference()
-
-      if (isSharedActivityDescription) {
-        await this.enterSharedActivityDescription()
-      }
-    }
-  }
-
-  async selectActivityDatesPreference() {
     await SameActivityDatesPageInteractions.selectSameActivityDatesAndContinue(
       this.browseTheWeb,
       this.siteDetails.sameActivityDates
     )
-  }
 
-  async enterSharedActivityDates() {
-    await this.actor.attemptsTo(CompleteActivityDates.now())
-  }
+    if (isSharedActivityDates) {
+      await this.actor.attemptsTo(CompleteActivityDates.now())
 
-  async selectActivityDescriptionPreference() {
-    await SameActivityDescriptionPageInteractions.selectSameActivityDescriptionAndContinue(
-      this.browseTheWeb,
-      this.siteDetails.sameActivityDescription
-    )
-  }
+      await SameActivityDescriptionPageInteractions.selectSameActivityDescriptionAndContinue(
+        this.browseTheWeb,
+        this.siteDetails.sameActivityDescription
+      )
 
-  async enterSharedActivityDescription() {
-    const firstSiteDescription = this.siteDetails.sites[0].activityDescription
-    await ActivityDescriptionPageInteractions.enterActivityDescriptionAndContinue(
-      this.browseTheWeb,
-      firstSiteDescription
-    )
-  }
-
-  async handleSiteActivityDates(
-    currentSite,
-    isSharedActivityDates,
-    isFirstSite,
-    isSharedActivityDescription
-  ) {
-    if (!isSharedActivityDates) {
-      await this.enterSiteSpecificActivityDates(currentSite)
-
-      if (isFirstSite) {
-        await this.selectActivityDescriptionPreference()
-
-        if (this.siteDetails.sameActivityDescription === true) {
-          await this.enterSharedActivityDescription()
-        }
+      if (isSharedActivityDescription) {
+        await this.actor.attemptsTo(CompleteActivityDescription.now())
       }
     }
   }
 
-  async enterSiteSpecificActivityDates(currentSite) {
-    // Temporarily update actor memory with site-specific dates
-    const originalActivityDates = this.actor.recalls('exemption').activityDates
-
-    this.actor.updates((exemption) => {
-      exemption.activityDates = currentSite.activityDates
-    })
-
-    await this.actor.attemptsTo(CompleteActivityDates.now())
-
-    // Restore original activity dates
-    this.actor.updates((exemption) => {
-      exemption.activityDates = originalActivityDates
-    })
-  }
-
-  async handleSiteActivityDescription(
-    currentSite,
+  async handleSiteSpecificDates(
+    siteNumber,
+    isFirstSite,
     isSharedActivityDescription
   ) {
-    if (!isSharedActivityDescription) {
-      await this.browseTheWeb.waitForNavigationTo(
-        '/exemption/site-details-activity-description',
-        '#activityDescription'
-      )
-      await ActivityDescriptionPageInteractions.enterActivityDescriptionAndContinue(
+    await this.actor.attemptsTo(CompleteActivityDates.forSite(siteNumber))
+
+    if (isFirstSite) {
+      await SameActivityDescriptionPageInteractions.selectSameActivityDescriptionAndContinue(
         this.browseTheWeb,
-        currentSite.activityDescription
+        this.siteDetails.sameActivityDescription
       )
+
+      if (isSharedActivityDescription) {
+        await this.actor.attemptsTo(CompleteActivityDescription.now())
+      }
     }
-  }
-
-  async handleSiteCoordinates(currentSite) {
-    const strategy = new CoordinateEntryStrategy(this.browseTheWeb)
-    await strategy.enterCoordinates(currentSite, this.config)
-  }
-
-  async addAnotherSite() {
-    await SiteDetailsReviewPageInteractions.addAnotherSite(this.browseTheWeb)
   }
 }
