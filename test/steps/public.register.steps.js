@@ -29,8 +29,12 @@ Given('the Public register page is displayed', async function () {
   this.actor.intendsTo(ApplyForExemption.withValidProjectName())
   await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
   await this.actor.attemptsTo(CompleteProjectName.now())
-  await this.actor.attemptsTo(SelectTheTask.withName('Public register'))
-  await this.actor.attemptsTo(EnsurePageHeading.is('Public register'))
+  await this.actor.attemptsTo(
+    SelectTheTask.withName('Sharing your project information publicly')
+  )
+  await this.actor.attemptsTo(
+    EnsurePageHeading.is('Sharing your project information publicly')
+  )
 })
 
 Given(
@@ -41,7 +45,9 @@ Given(
     this.actor.intendsTo(ApplyForExemption.withConsentToPublicRegister())
     await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
     await this.actor.attemptsTo(CompleteProjectName.now())
-    await this.actor.attemptsTo(SelectTheTask.withName('Public register'))
+    await this.actor.attemptsTo(
+      SelectTheTask.withName('Sharing your project information publicly')
+    )
     await this.actor.attemptsTo(CompletePublicRegisterTask.andSave())
   }
 )
@@ -54,7 +60,9 @@ Given(
     this.actor.intendsTo(ApplyForExemption.withWithholdFromPublicRegister())
     await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
     await this.actor.attemptsTo(CompleteProjectName.now())
-    await this.actor.attemptsTo(SelectTheTask.withName('Public register'))
+    await this.actor.attemptsTo(
+      SelectTheTask.withName('Sharing your project information publicly')
+    )
     await this.actor.attemptsTo(CompletePublicRegisterTask.andSave())
   }
 )
@@ -81,7 +89,7 @@ When(
 )
 
 When(
-  'the Save and continue button is selected after choosing Yes without providing a reason',
+  'the Save and continue button is selected after choosing No without providing a reason',
   async function () {
     this.actor.updates(Memory.ofPublicRegisterWithConsent(false))
     await this.actor.attemptsTo(CompletePublicRegisterTask.andSave())
@@ -114,7 +122,9 @@ When(
 )
 
 When('changing the public register information to withhold', async function () {
-  await this.actor.attemptsTo(SelectTheTask.withName('Public register'))
+  await this.actor.attemptsTo(
+    SelectTheTask.withName('Sharing your project information publicly')
+  )
   this.actor.updates(
     Memory.ofPublicRegisterWithConsentAndReason(false, faker.lorem.words(5))
   )
@@ -122,13 +132,17 @@ When('changing the public register information to withhold', async function () {
 })
 
 When('changing the public register information to consent', async function () {
-  await this.actor.attemptsTo(SelectTheTask.withName('Public register'))
+  await this.actor.attemptsTo(
+    SelectTheTask.withName('Sharing your project information publicly')
+  )
   this.actor.updates(Memory.ofPublicRegisterWithConsent(true))
   await this.actor.attemptsTo(CompletePublicRegisterTask.andSave())
 })
 
 Then('the public register information is saved', async function () {
-  await this.actor.attemptsTo(SelectTheTask.withName('Public register'))
+  await this.actor.attemptsTo(
+    SelectTheTask.withName('Sharing your project information publicly')
+  )
   await this.actor.attemptsTo(
     EnsurePublicRegisterTask.hasBeenCompletedWith(
       this.actor.recalls('exemption').publicRegister.consent,
@@ -191,12 +205,12 @@ Then(
   }
 )
 
-When('the user clicks the link to the public register', async function () {
+When('the user clicks the Explore Marine Plans link', async function () {
   await this.actor.attemptsTo(ClickPublicRegisterLink.now())
 })
 
 Then(
-  'the user is taken to the public register page in a new tab',
+  'the user is taken to the Explore Marine Plans page in a new tab',
   async function () {
     await this.actor.attemptsTo(EnsurePublicRegisterNewTab.isOpened())
   }
