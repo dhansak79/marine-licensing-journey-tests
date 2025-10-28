@@ -1,6 +1,7 @@
 import allure from 'allure-commandline'
 import {
   attachRichFeatureContext,
+  logOperation,
   logUserCleanup
 } from './test-infrastructure/capture/index.js'
 
@@ -83,6 +84,8 @@ export const config = {
   afterScenario: async function (scenario, world) {
     if (scenario.result?.status === 'FAILED') {
       await browser.takeScreenshot()
+      const currentUrl = await browser.getUrl()
+      logOperation('Test Failure URL', currentUrl, true)
     }
 
     if (global.testUsersCreated && global.testUsersCreated.length > 0) {
