@@ -255,15 +255,8 @@ export default class SiteDetailsFactory {
   }
 
   static _createSingleSite(options) {
-    const {
-      siteName,
-      siteNumber,
-      siteType,
-      coordinateSystem,
-      coordinateData,
-      activityDates,
-      activityDescription
-    } = options
+    const { siteName, siteNumber, siteType, coordinateSystem, coordinateData } =
+      options
     const site = {
       siteName,
       siteNumber,
@@ -273,24 +266,23 @@ export default class SiteDetailsFactory {
       ...coordinateData
     }
 
-    if ('activityDates' in options) {
-      if (activityDates !== undefined) {
-        site.activityDates = activityDates
-      }
-    } else {
-      site.activityDates = ActivityDatesModel.generateValidActivityDates()
-    }
+    this._addOptionalProperty(site, 'activityDates', options, () =>
+      ActivityDatesModel.generateValidActivityDates()
+    )
 
-    if ('activityDescription' in options) {
-      if (activityDescription !== undefined) {
-        site.activityDescription = activityDescription
-      }
-    } else {
-      site.activityDescription =
-        ActivityDescriptionModel.generateActivityDescription()
-    }
+    this._addOptionalProperty(site, 'activityDescription', options, () =>
+      ActivityDescriptionModel.generateActivityDescription()
+    )
 
     return site
+  }
+
+  static _addOptionalProperty(target, key, options, defaultGenerator) {
+    if (key in options && options[key] !== undefined) {
+      target[key] = options[key]
+    } else if (!(key in options)) {
+      target[key] = defaultGenerator()
+    }
   }
 
   static _getCoordinateData(shape, coordinateSystem) {
