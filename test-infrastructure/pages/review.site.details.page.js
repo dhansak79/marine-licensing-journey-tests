@@ -84,6 +84,15 @@ export default class ReviewSiteDetailsPage extends CommonElementsPage {
     return `//h2[contains(text(), "Site ${siteNumber} details")]/ancestor::div[contains(@class, "govuk-summary-card")]//dt[contains(normalize-space(text()), "Activity description")]/following-sibling::dd/following-sibling::dd//a[text()="Change"]`
   }
 
+  static coordinatesAtCentreChangeLink =
+    '//dt[contains(text(), "Coordinates at centre of site")]/following-sibling::dd/following-sibling::dd//a[text()="Change"]'
+  static coordinateSystemChangeLink =
+    '//dt[contains(text(), "Coordinate system")]/following-sibling::dd/following-sibling::dd//a[text()="Change"]'
+  static singleOrMultipleCoordinatesChangeLink =
+    '//dt[contains(text(), "Single or multiple sets of coordinates")]/following-sibling::dd/following-sibling::dd//a[text()="Change"]'
+  static widthChangeLink =
+    '//dt[contains(text(), "Width")]/following-sibling::dd/following-sibling::dd//a[text()="Change"]'
+
   static saveAndContinueButton = 'button*=Save and continue'
   static cancelLink = 'a*=Cancel'
   static backLink = 'a.govuk-back-link'
