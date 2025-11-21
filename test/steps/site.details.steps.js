@@ -266,6 +266,17 @@ Given(
   }
 )
 
+Given(
+  'an exemption for a 20 point polygon site using WGS84 coordinates',
+  function () {
+    this.actor = new Actor('Alice')
+    this.actor.can(BrowseTheWeb.using(browser))
+    this.actor.intendsTo(
+      ApplyForExemption.withValidProjectName().andSiteDetails.forAComplex20PointPolygonWithWGS84Coordinates()
+    )
+  }
+)
+
 Given('the site details task is reached', async function () {
   await this.actor.attemptsTo(Navigate.toTheMarineLicensingApp())
   await this.actor.attemptsTo(CompleteProjectName.now())
@@ -276,16 +287,9 @@ When('the site details task is completed', async function () {
   await this.actor.attemptsTo(CompleteSiteDetails.now())
 })
 
-When('the triangular site coordinates are entered', async function () {
-  await this.actor.attemptsTo(CompleteSiteDetails.coordinatesOnly())
+When('the site details task is completed and saved', async function () {
+  await this.actor.attemptsTo(CompleteSiteDetails.andSave())
 })
-
-When(
-  'the triangular site coordinates are entered and continued to review',
-  async function () {
-    await this.actor.attemptsTo(CompleteSiteDetails.toReview())
-  }
-)
 
 Then('the polygon coordinate entry page is displayed', async function () {
   await this.actor.attemptsTo(
@@ -294,24 +298,6 @@ Then('the polygon coordinate entry page is displayed', async function () {
     )
   )
 })
-
-When(
-  'the quadrilateral site coordinates are entered using add another point',
-  async function () {
-    await this.actor.attemptsTo(
-      CompleteSiteDetails.coordinatesWithAddAnotherPoint()
-    )
-  }
-)
-
-When(
-  'the pentagon site coordinates are entered using add another point',
-  async function () {
-    await this.actor.attemptsTo(
-      CompleteSiteDetails.coordinatesWithAddAnotherPoint()
-    )
-  }
-)
 
 When(
   'the {int} point random polygon coordinates are entered using add another point',
@@ -327,15 +313,6 @@ Then('the site details review page shows the site details', async function () {
   await this.actor.attemptsTo(EnsureSiteDetails.areCorrect())
   await this.actor.attemptsTo(ClickButton.withText('Continue'))
 })
-
-Then(
-  'the polygon site details review page shows the correct site details',
-  async function () {
-    await this.actor.attemptsTo(EnsurePageHeading.is('Review site details'))
-    await this.actor.attemptsTo(EnsureSiteDetails.areCorrect())
-    await this.actor.attemptsTo(ClickButton.withText('Continue'))
-  }
-)
 
 When(
   'the Save and continue button is clicked without providing any coordinates',
