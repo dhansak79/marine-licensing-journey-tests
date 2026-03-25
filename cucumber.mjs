@@ -59,12 +59,25 @@ export const github = {
   parallel: debug ? 1 : parseInt(process.env.MAX_INSTANCES || '8', 10),
   format: [
     './test/support/progress-formatter.js',
+    'summary',
     'html:cucumber-report.html',
     'json:cucumber-results.json',
     'allure-cucumberjs/reporter'
   ],
   paths: ['test/features/*.feature'],
   tags: 'not @wip and not @bug and not @d365 and not @real-defra-id and not @fivium and not @local-only'
+}
+
+export const exemption = {
+  ...common,
+  paths: ['test/features/*.feature', 'test-pw/features/*.feature'],
+  tags: 'not @lcml and not @wip and not @bug and not @d365 and not @real-defra-id and not @fivium and not @local-only'
+}
+
+export const lcml = {
+  ...common,
+  paths: ['test/features/lcml.*.feature'],
+  tags: 'not @wip'
 }
 
 export const cdp = {
