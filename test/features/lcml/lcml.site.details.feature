@@ -13,13 +13,19 @@ Feature: LCML: Site details journey
     Given an organisation user is on the upload file page for "<fileType>"
     When the user uploads a valid "<fileType>" file and saves
     Then the review site details page is displayed for the uploaded site
+    And all action links retain their default blue styling after being visited
 
     Examples:
       | fileType  |
       | KML       |
       | Shapefile |
 
-  Scenario: Continue from review saves site details as In Progress and re-enters via task list
-    Given an organisation user has uploaded a valid "KML" file and is on the review site details page
+  Scenario Outline: Adding a site name and continuing to the task list
+    Given an organisation user has uploaded a valid "<fileType>" file and added a site name
     When the user continues to the task list and re-enters the site details task
-    Then the review site details page is displayed for the uploaded site
+    Then the review site details page is displayed with the site name for site 1
+
+    Examples:
+      | fileType  |
+      | KML       |
+      | Shapefile |
